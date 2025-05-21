@@ -20,7 +20,7 @@ begin
     client.authenticate!(ignore_first_packet: false)
     puts "Authentification réussie!"
     
-    response = client.execute('Listplayers')
+    response = client.execute('addpoints 00026f2ebac84fe7937c17b72df97ce7 100')
     p response
     
     client.close
