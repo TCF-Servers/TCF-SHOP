@@ -10,9 +10,31 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_19_132124) do
+ActiveRecord::Schema[7.1].define(version: 2025_05_21_172431) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_trgm"
   enable_extension "plpgsql"
+
+  create_table "game_sessions", force: :cascade do |t|
+    t.bigint "player_id", null: false
+    t.string "map_name"
+    t.boolean "online", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id"], name: "index_game_sessions_on_player_id", unique: true
+  end
+
+  create_table "players", force: :cascade do |t|
+    t.string "platform_name"
+    t.string "in_game_name"
+    t.string "eos_id"
+    t.string "tribe_id"
+    t.string "tribe_name"
+    t.string "discord_name"
+    t.string "discord_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
@@ -26,4 +48,18 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_19_132124) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  create_table "votes", force: :cascade do |t|
+    t.bigint "player_id", null: false
+    t.string "source", default: "topserveur"
+    t.integer "points_awarded", default: 100
+    t.boolean "processed", default: false
+    t.string "map_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["player_id", "created_at"], name: "index_votes_on_player_id_and_created_at"
+    t.index ["player_id"], name: "index_votes_on_player_id"
+  end
+
+  add_foreign_key "game_sessions", "players"
+  add_foreign_key "votes", "players"
 end
