@@ -9,4 +9,7 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+
+  # Route pour le healthcheck (pour UptimeRobot)
+  get '/healthcheck', to: 'application#healthcheck'
 end
