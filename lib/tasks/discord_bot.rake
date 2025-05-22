@@ -15,14 +15,14 @@ namespace :discord do
     # Mapping des maps vers les ports RCON
     MAP_PORTS = {
       'TheIsland_WP' => ENV['ISLAND_WP_RCON_PORT'].to_i,
-      # 'TheCenter_WP' => ENV['CENTER_WP_RCON_PORT'].to_i,
-      # 'ScorchedEarth_WP' => ENV['SCORCHED_EARTH_WP_RCON_PORT'].to_i,
+      'TheCenter_WP' => ENV['CENTER_WP_RCON_PORT'].to_i,
+      'ScorchedEarth_WP' => ENV['SCORCHED_EARTH_WP_RCON_PORT'].to_i,
       'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
-      # 'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
-      # 'LostColonny_WP' => ENV['LOST_COLONY_WP_RCON_PORT'].to_i,
-      # 'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
-      # 'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
-      # 'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
+      'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
+      'LostColonny_WP' => ENV['LOST_COLONY_WP_RCON_PORT'].to_i,
+      'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
+      'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
+      'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
       # Ajoutez d'autres maps avec leurs ports respectifs
       # 'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
       # 'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
