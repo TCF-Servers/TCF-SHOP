@@ -158,7 +158,12 @@ namespace :discord do
                       
                       puts "Vote enregistré pour #{player.in_game_name} (#{recent_votes + 1}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
                       
-                      process_vote(vote, player) unless UNAUTHORIZED_IN_GAME_NAME.include?(player.in_game_name)
+                      if UNAUTHORIZED_IN_GAME_NAME.include?(player.in_game_name)
+                        puts "Vote non traité pour #{player.in_game_name} (nom non autorisé)"
+                        vote.destroy
+                      else
+                        process_vote(vote, player)
+                      end
                     else
                       puts " Limite de votes atteinte pour #{player.in_game_name} (#{recent_votes}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
                     end
