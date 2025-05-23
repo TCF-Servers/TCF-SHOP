@@ -204,18 +204,18 @@ namespace :discord do
       puts "Points ajoutés pour #{player.in_game_name} sur la map #{player.current_map} (port: #{map_port})"
   end
   
-  # def self.process_pending_votes(player)
-  #   # Récupérer tous les votes non traités pour ce joueur
-  #   pending_votes = player.votes.unprocessed
+  def self.process_pending_votes(player)
+    # Récupérer tous les votes non traités pour ce joueur
+    pending_votes = player.votes.unprocessed
     
-  #   if pending_votes.any?
-  #     puts "Traitement de #{pending_votes.count} vote(s) en attente pour #{player.in_game_name}"
+    if pending_votes.any?
+      puts "Traitement de #{pending_votes.count} vote(s) en attente pour #{player.in_game_name}"
       
-  #     pending_votes.each do |vote|
-  #       process_vote(vote, player)
-  #     end
-  #   end
-  # end
+      pending_votes.each do |vote|
+        process_vote(vote, player)
+      end
+    end
+  end
   
   def self.handle_rcon_command(command, port = nil)
     begin
