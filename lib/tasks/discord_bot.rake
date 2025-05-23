@@ -38,6 +38,17 @@ namespace :discord do
         MAX_VOTES_PER_PERIOD = 3
         VOTE_PERIOD_HOURS = 2
         POINTS_PER_VOTE = 100
+        UNAUTHORIZED_IN_GAME_NAME = [
+          "survivor",
+          "survivant",
+          "joueur",
+          "un joueur",
+          "joueurs",
+          "player",
+          "humain",
+          "humains",
+          "human",
+        ]
 
         # Ajouter un gestionnaire d'erreurs pour éviter que le bot ne se ferme
         bot.heartbeat do
@@ -147,7 +158,7 @@ namespace :discord do
                       
                       puts "Vote enregistré pour #{player.in_game_name} (#{recent_votes + 1}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
                       
-                      process_vote(vote, player)
+                      process_vote(vote, player) unless UNAUTHORIZED_IN_GAME_NAME.include?(player.in_game_name)
                     else
                       puts " Limite de votes atteinte pour #{player.in_game_name} (#{recent_votes}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
                     end
