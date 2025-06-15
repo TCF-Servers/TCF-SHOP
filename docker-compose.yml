@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: rfg_shop_production
+    ports:
+      - "5432:5432"
+    restart: always
+
+  web:
+    build: .
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/rfg_shop_production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      VOTE_CHANNEL_ID: ${VOTE_CHANNEL_ID}
+      JOINLEAVE_CHANNEL_ID: ${JOINLEAVE_CHANNEL_ID}
+      RCON_HOST: ${RCON_HOST}
+      RCON_PASSWORD: ${RCON_PASSWORD}
+    env_file:
+      - .env
+    restart: always
+
+  worker:
+    build: .
+    depends_on:
+      - db
+      - web
+    command: bundle exec rails discord:start
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/rfg_shop_production
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      DISCORD_BOT_TOKEN: ${DISCORD_BOT_TOKEN}
+      VOTE_CHANNEL_ID: ${VOTE_CHANNEL_ID}
+      JOINLEAVE_CHANNEL_ID: ${JOINLEAVE_CHANNEL_ID}
+      RCON_HOST: ${RCON_HOST}
+      RCON_PASSWORD: ${RCON_PASSWORD}
+    env_file:
+      - .env
+    restart: always
+
+volumes:
+  postgres_data:

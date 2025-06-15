@@ -35,9 +35,9 @@ namespace :discord do
         }
 
         # Configuration des votes
-        MAX_VOTES_PER_PERIOD = 3
+        MAX_VOTES_PER_PERIOD = 2
         VOTE_PERIOD_HOURS = 2
-        POINTS_PER_VOTE = 100
+        POINTS_PER_VOTE = 150
         UNAUTHORIZED_IN_GAME_NAME = [
           "survivor",
           "survivant",
@@ -113,15 +113,16 @@ namespace :discord do
               elsif event.content.include?('Player logged off')
                 # Extraire le nom du joueur
                 in_game_name = event.content.match(/\*\*IngameName\*\*: `(.*?)`/).to_a[1]
+                eos_id = event.content.match(/\*\*EOS:\*\* `(.*?)`/).to_a[1]
                 
-                if in_game_name
-                  puts "Joueur déconnecté: #{in_game_name}"
+                if eos_id
+                  puts "Joueur déconnecté: #{in_game_name} (EOS: #{eos_id})"
                   
                   # Trouver le joueur et mettre fin à sa session
-                  player = Player.find_by(in_game_name: in_game_name)
+                  player = Player.find_by(eos_id: eos_id)
                   if player
                     player.disconnect!
-                    puts "Session de jeu terminée pour #{in_game_name}"
+                    puts "Session de jeu terminée pour #{player.in_game_name} (EOS: #{eos_id})"
                   end
                 end
               end
