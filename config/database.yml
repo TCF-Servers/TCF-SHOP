@@ -79,6 +79,9 @@ test:
 #
 production:
   <<: *default
-  database: rfg_shop_production
-  username: rfg_shop
-  password: <%= ENV["RFG_SHOP_DATABASE_PASSWORD"] %>
+  url: <%= ENV['DATABASE_URL'] %>
+  database: <%= ENV.fetch('POSTGRES_DB') { 'rfg_shop_production' } %>
+  username: <%= ENV.fetch('POSTGRES_USER') { 'rfg_shop' } %>
+  password: <%= ENV.fetch('POSTGRES_PASSWORD') { ENV['RFG_SHOP_DATABASE_PASSWORD'] } %>
+  host: <%= ENV.fetch('POSTGRES_HOST') { 'db' } %>
+  port: <%= ENV.fetch('POSTGRES_PORT') { 5432 } %>

@@ -1,5 +1,11 @@
 #!/bin/bash -e
 
+# If SECRET_KEY_BASE is not set, generate a random one
+if [ -z "${SECRET_KEY_BASE}" ]; then
+  export SECRET_KEY_BASE=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64)
+  echo "Generated random SECRET_KEY_BASE as none was provided"
+fi
+
 # If running the rails server then create or migrate existing database
 if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
   ./bin/rails db:prepare
