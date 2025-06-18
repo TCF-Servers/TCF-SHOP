@@ -91,7 +91,10 @@ namespace :discord do
                   player = Player.find_or_initialize_by(eos_id: eos_id)
                   
                   # Mettre à jour les informations du joueur
-                  player.in_game_name = in_game_name
+                  if player.in_game_name == "Survivor" || player.in_game_name == "survivor" || player.in_game_name.nil?
+                    player.in_game_name = in_game_name
+                  end
+                  
                   player.platform_name = platform_name
                   player.tribe_id = tribe_id
                   player.tribe_name = tribe_name
