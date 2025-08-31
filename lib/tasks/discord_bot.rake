@@ -262,10 +262,10 @@ namespace :discord do
             Timeout::timeout(5) do  # Réduit de 50s à 5s
               client = get_rcon_client(port || ENV['ISLAND_WP_RCON_PORT'].to_i)
               return false unless client
-              
+              puts "Commande RCON: #{command} (port: #{port} | client: #{client.host}:#{client.port}, #{client.socket})"
               response = client.execute(command)
               puts "Commande RCON exécutée: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
-              puts "Réponse: #{response}"
+              puts "Réponse: #{response.body}"
               
               return true
             end
