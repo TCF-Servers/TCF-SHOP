@@ -2,6 +2,7 @@ class PagesController < ApplicationController
   skip_before_action :authenticate_user!, only: [ :home, :ranking ]
 
   def home
+    redirect_to ranking_path
   end
 
   def ranking
