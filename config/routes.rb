@@ -12,4 +12,6 @@ Rails.application.routes.draw do
 
   # Route pour le healthcheck (pour UptimeRobot)
   get '/healthcheck', to: 'application#healthcheck'
+
+  get :ranking, to: 'pages#ranking'
 end
