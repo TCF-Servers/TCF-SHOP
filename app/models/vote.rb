@@ -21,4 +21,23 @@ class Vote < ApplicationRecord
     return false unless player
     player.votes.recent(hours).count < max_votes
   end
+
+
+  def self.current_month_votes_count
+    where('created_at >= ?', Time.current.beginning_of_month - 2.hours).count
+  end
+
+  def self.current_month_points
+    base_points = 150
+    votes_count = current_month_votes_count
+    
+    case votes_count
+    when 1000...2500 then (base_points * 1.10).ceil
+    when 2500...5000 then (base_points * 1.25).ceil  
+    when 5000...7500 then (base_points * 1.50).ceil  
+    when 7500...10000 then (base_points * 1.75).ceil 
+    when 10000..Float::INFINITY then (base_points * 2.00).ceil 
+    else base_points
+    end
+  end
 end

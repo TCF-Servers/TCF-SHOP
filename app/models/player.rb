@@ -1,6 +1,7 @@
 class Player < ApplicationRecord
   has_one :game_session, dependent: :destroy
   has_many :votes, dependent: :destroy
+  has_many :valid_votes, -> { where(vote_valid: true) }, class_name: 'Vote'
   
   # Configuration de pg_search
   include PgSearch::Model
@@ -38,9 +39,22 @@ class Player < ApplicationRecord
     votes.recent(hours).count < max_votes
   end
   
-  # Méthode pour obtenir le nombre de votes récents
+  # Méthode pour obtenir le nombre de votes récents (exclut les votes non processed)
   def recent_votes_count(hours = 2)
-    votes.recent(hours).count
+    votes.recent(hours).processed.count
+  end
+
+  def update_votes_count!
+    self.votes_count += 1
+    self.save
+  end
+
+  def current_month_valid_votes
+    valid_votes.where(created_at: (Time.current.beginning_of_month - 2.hours)..(Time.current.end_of_month - 2.hours)).count
+  end
+
+  def last_month_valid_votes
+    valid_votes.where(created_at: (Time.current.last_month.beginning_of_month - 2.hours)..(Time.current.last_month.end_of_month - 2.hours)).count
   end
   
   # Méthode de classe pour rechercher un joueur de manière flexible

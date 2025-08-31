@@ -1,4 +1,6 @@
 require 'rcon'
+require 'timeout'
+
 
 namespace :discord do
   desc 'Start Discord bot'
@@ -37,7 +39,6 @@ namespace :discord do
         # Configuration des votes
         MAX_VOTES_PER_PERIOD = 2
         VOTE_PERIOD_HOURS = 2
-        POINTS_PER_VOTE = 150
         UNAUTHORIZED_IN_GAME_NAME = [
           "survivor",
           "survivant",
@@ -108,8 +109,14 @@ namespace :discord do
                   player.connect!(map_name)
                   puts "Session de jeu créée pour #{in_game_name} sur #{map_name}"
                   
-                  # Vérifier s'il y a des votes non traités pour ce joueur
-                  process_pending_votes(player)
+                  # Traiter les votes non processed lors de la connexion
+                  unprocessed_votes = player.votes.unprocessed.where(vote_valid: true)
+                  if unprocessed_votes.any?
+                    puts "Traitement des votes non processed pour #{player.in_game_name} lors de la connexion (#{unprocessed_votes.count} votes)"
+                    unprocessed_votes.each do |unprocessed_vote|
+                      process_vote(unprocessed_vote, player)
+                    end
+                  end
                 end
               
               # Détecter les déconnexions
@@ -156,8 +163,9 @@ namespace :discord do
                       # Créer un nouveau vote
                       vote = player.votes.create!(
                         source: "topserveur",
-                        points_awarded: POINTS_PER_VOTE,
-                        processed: false
+                        points_awarded: Vote.current_month_points,
+                        processed: false,
+                        vote_valid: true
                       )
                       
                       puts "Vote enregistré pour #{player.in_game_name} (#{recent_votes + 1}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
@@ -169,7 +177,13 @@ namespace :discord do
                         process_vote(vote, player)
                       end
                     else
-                      puts " Limite de votes atteinte pour #{player.in_game_name} (#{recent_votes}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
+                      puts " Limite de votes atteinte pour #{player.in_game_name} (#{recent_votes}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures). Création d'un vote non valide."
+                      vote = player.votes.create!(
+                        source: "topserveur",
+                        points_awarded: Vote.current_month_points,
+                        processed: true,
+                        vote_valid: false
+                      )
                     end
                   else
                     puts "Joueur non trouvé dans la base de données: #{player_name}"
@@ -206,55 +220,47 @@ namespace :discord do
         sleep 30
       end
     end
-  end
   
-  private
-  
-  def self.process_vote(vote, player)
-    return if vote.processed?
-    
+    def self.process_vote(vote, player)
+      return if vote.processed?
+      
       # Utiliser le port RCON correspondant à la map actuelle
       map_port = MAP_PORTS[player.current_map] || ENV['ISLAND_WP_RCON_PORT'].to_i
       
       # Envoyer les points via RCON avec le bon port
-      handle_rcon_command("AddPoints #{player.eos_id} #{vote.points_awarded}", map_port)
+      success = handle_rcon_command("AddPoints #{player.eos_id} #{vote.points_awarded}", map_port)
       
-      # Marquer le vote comme traité
-      vote.process!(player.current_map)
-      puts "Points ajoutés pour #{player.in_game_name} sur la map #{player.current_map} (port: #{map_port})"
-  end
-  
-  def self.process_pending_votes(player)
-    # Récupérer tous les votes non traités pour ce joueur
-    pending_votes = player.votes.unprocessed
-    
-    if pending_votes.any?
-      puts "Traitement de #{pending_votes.count} vote(s) en attente pour #{player.in_game_name}"
-      
-      pending_votes.each do |vote|
-        process_vote(vote, player)
+      if success
+        # Marquer le vote comme traité seulement si RCON a réussi
+        vote.process!(player.current_map)
+        puts "Points ajoutés pour #{player.in_game_name} sur la map #{player.current_map} (port: #{map_port})"
+        player.update_votes_count!
+      else
+        puts "Échec de l'ajout de points pour #{player.in_game_name} - le vote reste non processed pour retraitement ultérieur"
       end
     end
-  end
-  
-  def self.handle_rcon_command(command, port = nil)
-    begin
-      Timeout::timeout(50) do 
-        client = Rcon::Client.new(
-          host: ENV['RCON_HOST'],
-          port: port || ENV['ISLAND_WP_RCON_PORT'].to_i,
-          password: ENV['RCON_PASSWORD']
-        )
-        
-        client.authenticate!(ignore_first_packet: false)
-        response = client.execute(command)
-        puts "Commande RCON exécutée: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
-        puts "Réponse: #{response}"
-        
-        # client.close
+    
+    def self.handle_rcon_command(command, port = nil, vote = nil)
+      begin
+        Timeout::timeout(50) do 
+          client = Rcon::Client.new(
+            host: ENV['RCON_HOST'],
+            port: port || ENV['ISLAND_WP_RCON_PORT'].to_i,
+            password: ENV['RCON_PASSWORD']
+          )
+          
+          client.authenticate!(ignore_first_packet: false)
+          response = client.execute(command)
+          puts "Commande RCON exécutée: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
+          puts "Réponse: #{response}"
+          
+          client.end_session!
+          return true
+        end
+      rescue => e
+        puts "Erreur RCON: #{e.message}"
+        return false
       end
-    rescue => e
-      puts "Erreur RCON: #{e.message}"
     end
   end
 end
