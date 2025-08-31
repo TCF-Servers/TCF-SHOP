@@ -113,9 +113,7 @@ namespace :discord do
                   unprocessed_votes = player.votes.unprocessed.where(vote_valid: true)
                   if unprocessed_votes.any?
                     puts "Traitement des votes non processed pour #{player.in_game_name} lors de la connexion (#{unprocessed_votes.count} votes)"
-                    unprocessed_votes.each do |unprocessed_vote|
-                      process_vote(unprocessed_vote, player)
-                    end
+                    process_votes_batch(unprocessed_votes, player)
                   end
                 end
               
@@ -174,7 +172,7 @@ namespace :discord do
                         puts "Vote non traité pour #{player.in_game_name} (nom non autorisé)"
                         vote.destroy
                       else
-                        process_vote(vote, player)
+                        process_votes_batch([vote], player)
                       end
                     else
                       puts " Limite de votes atteinte pour #{player.in_game_name} (#{recent_votes}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures). Création d'un vote non valide."
@@ -200,6 +198,44 @@ namespace :discord do
 
         puts 'Bot Discord démarré!'
         
+        # RCON connection pool for better performance
+        @rcon_clients = {}
+        @rcon_mutex = Mutex.new
+        
+        def get_rcon_client(port)
+          @rcon_mutex.synchronize do
+            key = port.to_s
+            
+            # Check if existing connection is still valid
+            if @rcon_clients[key]
+              begin
+                # Test connection with a simple command
+                @rcon_clients[key].execute('help')
+                return @rcon_clients[key]
+              rescue
+                # Connection is dead, remove it
+                @rcon_clients[key] = nil
+              end
+            end
+            
+            # Create new connection
+            begin
+              client = Rcon::Client.new(
+                host: ENV['RCON_HOST'],
+                port: port,
+                password: ENV['RCON_PASSWORD']
+              )
+              client.authenticate!(ignore_first_packet: false)
+              @rcon_clients[key] = client
+              puts "Nouvelle connexion RCON créée pour le port #{port}"
+              return client
+            rescue => e
+              puts "Erreur création connexion RCON port #{port}: #{e.message}"
+              return nil
+            end
+          end
+        end
+        
         # Define helper methods within the task scope
         def process_vote(vote, player)
           return if vote.processed?
@@ -214,32 +250,66 @@ namespace :discord do
             # Marquer le vote comme traité seulement si RCON a réussi
             vote.process!(player.current_map)
             puts "Points ajoutés pour #{player.in_game_name} sur la map #{player.current_map} (port: #{map_port})"
-            player.update_votes_count!
+            return true
           else
             puts "Échec de l'ajout de points pour #{player.in_game_name} - le vote reste non processed pour retraitement ultérieur"
+            return false
           end
         end
         
         def handle_rcon_command(command, port = nil, vote = nil)
           begin
-            Timeout::timeout(50) do 
-              client = Rcon::Client.new(
-                host: ENV['RCON_HOST'],
-                port: port || ENV['ISLAND_WP_RCON_PORT'].to_i,
-                password: ENV['RCON_PASSWORD']
-              )
+            Timeout::timeout(5) do  # Réduit de 50s à 5s
+              client = get_rcon_client(port || ENV['ISLAND_WP_RCON_PORT'].to_i)
+              return false unless client
               
-              client.authenticate!(ignore_first_packet: false)
               response = client.execute(command)
               puts "Commande RCON exécutée: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
               puts "Réponse: #{response}"
               
-              client.end_session!
               return true
             end
+          rescue Timeout::Error
+            puts "Timeout RCON (5s) pour la commande: #{command}"
+            return false
           rescue => e
             puts "Erreur RCON: #{e.message}"
+            # Invalider la connexion en cas d'erreur
+            @rcon_mutex.synchronize do
+              @rcon_clients[port.to_s] = nil if port
+            end
             return false
+          end
+        end
+        
+        def process_votes_batch(votes, player)
+          return if votes.empty?
+          
+          processed_count = 0
+          
+          # Traiter les votes de manière asynchrone avec un pool de threads
+          threads = []
+          votes.each do |vote|
+            threads << Thread.new do
+              if process_vote(vote, player)
+                processed_count += 1
+              end
+            end
+            
+            # Limiter le nombre de threads simultanés
+            if threads.size >= 3
+              threads.each(&:join)
+              threads.clear
+            end
+          end
+          
+          # Attendre les derniers threads
+          threads.each(&:join)
+          
+          # Mettre à jour votes_count en une seule fois
+          if processed_count > 0
+            player.increment!(:votes_count, processed_count)
+            puts "#{processed_count} votes traités pour #{player.in_game_name}"
           end
         end
         
