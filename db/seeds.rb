@@ -1,35 +1,61 @@
 # This file should ensure the existence of records required to run the application in every environment (production,
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
 
-require 'rcon'
-require 'timeout'
+puts " Seeding database..."
 
-begin
-  Timeout::timeout(50) do 
-    puts "Tentative de connexion au serveur..."
-    client = Rcon::Client.new(host: '213.133.103.176', port: 59202, password: 'GaI2c2mwR17JP4DNd71vHZWHLjP37tizsnwu8Ip98Lc1IM7yxh')
-    puts "Tentative d'authentification..."
-    p client
-    client.authenticate!(ignore_first_packet: false)
-    puts "Authentification réussie!"
-    
-    response = client.execute('addpoints 00026f2ebac84fe7937c17b72df97ce7 100')
-    p response
-    
-    client.close
-    puts "Connexion fermée"
-  end
-rescue Timeout::Error
-  puts "Timeout - L'authentification a pris trop de temps"
-rescue => e
-  puts "Erreur : #{e.class} - #{e.message}"
-ensure
-  client&.close if defined?(client)
+# Use existing players from database
+puts "Loading existing players..."
+players = Player.all.to_a
+
+if players.empty?
+  puts " No players found in database. Please create some players first."
+  exit
 end
+
+puts "Found #{players.count} existing players:"
+players.each { |p| puts "  #{p.in_game_name}" }
+
+# Generate random votes from last month
+puts "\nGenerating random votes from last month..."
+
+last_month_start = Time.current.last_month.beginning_of_month - 2.hours
+last_month_end = Time.current.last_month.end_of_month - 2.hours
+
+# Create 100 random votes distributed among existing players
+100.times do |i|
+  # Select random player from existing players
+  player = players.sample
+  
+  # Random date within last month
+  random_date = rand(last_month_start..last_month_end)
+  
+  # Create vote
+  Vote.create!(
+    player: player,
+    source: "topserveur",
+    points_awarded: 150,
+    processed: true,
+    vote_valid: true,
+    created_at: random_date,
+    updated_at: random_date
+  )
+  
+  # Update player's votes_count
+  player.increment!(:votes_count)
+  
+  print "." if (i + 1) % 10 == 0
+end
+
+puts "\n\n Seed data created successfully!"
+puts "Players used: #{players.count}"
+puts "Votes created: 100 (from last month)"
+puts "Date range: #{last_month_start.strftime('%d/%m/%Y')} - #{last_month_end.strftime('%d/%m/%Y')}"
+
+# Display top 10 ranking
+puts "\n Top 10 Last Month Ranking:"
+top_players = players.sort_by(&:last_month_valid_votes).reverse.first(10)
+top_players.each_with_index do |player, index|
+  puts "  #{index + 1}. #{player.in_game_name}: #{player.last_month_valid_votes} votes"
+end
+
