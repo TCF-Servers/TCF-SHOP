@@ -198,44 +198,6 @@ namespace :discord do
 
         puts 'Bot Discord démarré!'
         
-        # RCON connection pool for better performance
-        @rcon_clients = {}
-        @rcon_mutex = Mutex.new
-        
-        def get_rcon_client(port)
-          @rcon_mutex.synchronize do
-            key = port.to_s
-            
-            # Check if existing connection is still valid
-            if @rcon_clients[key]
-              begin
-                # Test connection with a simple command
-                @rcon_clients[key].execute('help')
-                return @rcon_clients[key]
-              rescue
-                # Connection is dead, remove it
-                @rcon_clients[key] = nil
-              end
-            end
-            
-            # Create new connection
-            begin
-              client = Rcon::Client.new(
-                host: ENV['RCON_HOST'],
-                port: port,
-                password: ENV['RCON_PASSWORD']
-              )
-              client.authenticate!(ignore_first_packet: false)
-              @rcon_clients[key] = client
-              puts "Nouvelle connexion RCON créée pour le port #{port}"
-              return client
-            rescue => e
-              puts "Erreur création connexion RCON port #{port}: #{e.message}"
-              return nil
-            end
-          end
-        end
-        
         # Define helper methods within the task scope
         def process_vote(vote, player)
           return if vote.processed?
@@ -259,9 +221,13 @@ namespace :discord do
         
         def handle_rcon_command(command, port = nil, vote = nil)
           begin
-            Timeout::timeout(5) do  # Réduit de 50s à 5s
-              client = get_rcon_client(port || ENV['ISLAND_WP_RCON_PORT'].to_i)
-              return false unless client
+            Timeout::timeout(5) do  
+              client = Rcon::Client.new(
+                host: ENV['RCON_HOST'],
+                port: port || ENV['ISLAND_WP_RCON_PORT'].to_i,
+                password: ENV['RCON_PASSWORD']
+              )
+              client.authenticate!(ignore_first_packet: false)
               puts "Commande RCON: #{command} (port: #{port} | client: #{client.send(:host)}:#{client.send(:port)}, #{client.send(:socket)})"
               response = client.execute(command)
               puts "Commande RCON exécutée: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
@@ -274,10 +240,6 @@ namespace :discord do
             return false
           rescue => e
             puts "Erreur RCON: #{e.message}"
-            # Invalider la connexion en cas d'erreur
-            @rcon_mutex.synchronize do
-              @rcon_clients[port.to_s] = nil if port
-            end
             return false
           end
         end
