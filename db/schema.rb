@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_05_21_172431) do
+ActiveRecord::Schema[7.1].define(version: 2025_08_31_124802) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -34,6 +34,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_21_172431) do
     t.string "discord_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "votes_count"
   end
 
   create_table "users", force: :cascade do |t|
@@ -56,6 +57,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_05_21_172431) do
     t.string "map_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "vote_valid"
     t.index ["player_id", "created_at"], name: "index_votes_on_player_id_and_created_at"
     t.index ["player_id"], name: "index_votes_on_player_id"
   end
