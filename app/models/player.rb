@@ -23,6 +23,8 @@ class Player < ApplicationRecord
   
   def connect!(map_name)
     # Créer ou mettre à jour la session
+    self.update(votes_count: self.valid_votes.count) if self.votes_count.nil?
+    
     if game_session.nil?
       create_game_session(map_name: map_name, online: true)
     else
