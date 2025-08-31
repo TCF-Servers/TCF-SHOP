@@ -221,7 +221,7 @@ namespace :discord do
       end
     end
   
-    def self.process_vote(vote, player)
+    def process_vote(vote, player)
       return if vote.processed?
       
       # Utiliser le port RCON correspondant à la map actuelle
@@ -240,7 +240,7 @@ namespace :discord do
       end
     end
     
-    def self.handle_rcon_command(command, port = nil, vote = nil)
+    def handle_rcon_command(command, port = nil, vote = nil)
       begin
         Timeout::timeout(50) do 
           client = Rcon::Client.new(
