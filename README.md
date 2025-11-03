@@ -1,4 +1,4 @@
-# RFG Shop - Bot Discord
+# TCF Shop - Bot Discord
 
 ## Fonctionnement du bot Discord
 
