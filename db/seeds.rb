@@ -5,34 +5,37 @@
 require 'rcon'
 require 'timeout'
 
-# Récupération des données
+# Mapping des maps vers les ports RCON (identique au bot Discord)
+MAP_PORTS = {
+  'TheIsland_WP' => ENV['ISLAND_WP_RCON_PORT'].to_i,
+  'TheCenter_WP' => ENV['CENTER_WP_RCON_PORT'].to_i,
+  'ScorchedEarth_WP' => ENV['SCORCHED_EARTH_WP_RCON_PORT'].to_i,
+  'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
+  'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
+  'LostColonny_WP' => ENV['LOST_COLONY_WP_RCON_PORT'].to_i,
+  'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
+  'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
+  'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
+}
+
+# Récupération des données (uniquement les votes valides)
 data = Vote
   .joins(player: :game_session)
   .where(created_at: Date.current.beginning_of_month..Date.current.end_of_month)
+  .where(vote_valid: true)
   .group("players.eos_id, game_sessions.map_name, game_sessions.online")
   .select("players.eos_id, COUNT(votes.id) as vote_count, game_sessions.map_name, game_sessions.online")
   .map do |v|
-    rcon_port = if v.online && v.map_name
-                  case v.map_name
-                  when /Island/i then ENV['ISLAND_WP_RCON_PORT']
-                  when /Scorched.*Earth/i then ENV['SCORCHED_EARTH_WP_RCON_PORT']
-                  when /Center/i then ENV['CENTER_WP_RCON_PORT']
-                  when /Aberration/i then ENV['ABERRATION_WP_RCON_PORT']
-                  when /Extinction/i then ENV['EXTINCTION_WP_RCON_PORT']
-                  when /Astraeos/i then ENV['ASTRAEOS_WP_RCON_PORT']
-                  when /Ragnarok/i then ENV['RAGNAROK_WP_RCON_PORT']
-                  when /Valguero/i then ENV['VALGUERO_WP_RCON_PORT']
-                  when /Lost.*Colony/i then ENV['LOST_COLONY_WP_RCON_PORT']
-                  else ENV['ISLAND_WP_RCON_PORT']
-                  end
+    rcon_port = if v.online
+                  MAP_PORTS[v.map_name] || ENV['ISLAND_WP_RCON_PORT'].to_i
                 else
-                  ENV['ISLAND_WP_RCON_PORT']
+                  ENV['ISLAND_WP_RCON_PORT'].to_i
                 end
 
     {
       eos_id: v.eos_id,
       vote_count: v.vote_count,
-      rcon_port: rcon_port.to_i
+      rcon_port: rcon_port
     }
   end
 
@@ -84,4 +87,3 @@ data.each do |player_data|
 end
 
 puts "Traitement terminé: #{data.size} joueurs traités"
-end
