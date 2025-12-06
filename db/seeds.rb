@@ -2,60 +2,86 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-puts " Seeding database..."
+require 'rcon'
+require 'timeout'
 
-# Use existing players from database
-puts "Loading existing players..."
-players = Player.all.to_a
+# Récupération des données
+data = Vote
+  .joins(player: :game_session)
+  .where(created_at: Date.current.beginning_of_month..Date.current.end_of_month)
+  .group("players.eos_id, game_sessions.map_name, game_sessions.online")
+  .select("players.eos_id, COUNT(votes.id) as vote_count, game_sessions.map_name, game_sessions.online")
+  .map do |v|
+    rcon_port = if v.online && v.map_name
+                  case v.map_name
+                  when /Island/i then ENV['ISLAND_WP_RCON_PORT']
+                  when /Scorched.*Earth/i then ENV['SCORCHED_EARTH_WP_RCON_PORT']
+                  when /Center/i then ENV['CENTER_WP_RCON_PORT']
+                  when /Aberration/i then ENV['ABERRATION_WP_RCON_PORT']
+                  when /Extinction/i then ENV['EXTINCTION_WP_RCON_PORT']
+                  when /Astraeos/i then ENV['ASTRAEOS_WP_RCON_PORT']
+                  when /Ragnarok/i then ENV['RAGNAROK_WP_RCON_PORT']
+                  when /Valguero/i then ENV['VALGUERO_WP_RCON_PORT']
+                  when /Lost.*Colony/i then ENV['LOST_COLONY_WP_RCON_PORT']
+                  else ENV['ISLAND_WP_RCON_PORT']
+                  end
+                else
+                  ENV['ISLAND_WP_RCON_PORT']
+                end
 
-if players.empty?
-  puts " No players found in database. Please create some players first."
-  exit
+    {
+      eos_id: v.eos_id,
+      vote_count: v.vote_count,
+      rcon_port: rcon_port.to_i
+    }
+  end
+
+# Fonction pour exécuter une commande RCON
+def execute_rcon_command(command, port)
+  begin
+    Timeout::timeout(5) do
+      client = Rcon::Client.new(
+        host: ENV['RCON_HOST'],
+        port: port,
+        password: ENV['RCON_PASSWORD']
+      )
+      client.authenticate!(ignore_first_packet: false)
+      puts "Commande RCON: #{command} (port: #{port})"
+      response = client.execute(command)
+      puts "Réponse: #{response.body}"
+      return true
+    end
+  rescue Timeout::Error
+    puts "Timeout RCON (5s) pour la commande: #{command} sur le port #{port}"
+    return false
+  rescue => e
+    puts "Erreur RCON: #{e.message}"
+    return false
+  end
 end
 
-puts "Found #{players.count} existing players:"
-players.each { |p| puts "  #{p.in_game_name}" }
+# Itération sur les données et exécution des commandes RCON
+data.each do |player_data|
+  eos_id = player_data[:eos_id]
+  vote_count = player_data[:vote_count]
+  rcon_port = player_data[:rcon_port]
+  points = 150 * vote_count
 
-# Generate random votes from last month
-puts "\nGenerating random votes from last month..."
+  command = "AddPoints #{eos_id} #{points}"
 
-last_month_start = Time.current.last_month.beginning_of_month - 2.hours
-last_month_end = Time.current.last_month.end_of_month - 2.hours
+  puts "Traitement du joueur #{eos_id}: #{vote_count} votes = #{points} points (port: #{rcon_port})"
 
-# Create 100 random votes distributed among existing players
-100.times do |i|
-  # Select random player from existing players
-  player = players.sample
-  
-  # Random date within last month
-  random_date = rand(last_month_start..last_month_end)
-  
-  # Create vote
-  Vote.create!(
-    player: player,
-    source: "topserveur",
-    points_awarded: 150,
-    processed: true,
-    vote_valid: true,
-    created_at: random_date,
-    updated_at: random_date
-  )
-  
-  # Update player's votes_count
-  player.increment!(:votes_count)
-  
-  print "." if (i + 1) % 10 == 0
+  success = execute_rcon_command(command, rcon_port)
+
+  if success
+    puts "✓ Points ajoutés avec succès pour #{eos_id}"
+  else
+    puts "✗ Échec de l'ajout de points pour #{eos_id}"
+  end
+
+  # Petite pause pour éviter de surcharger le serveur RCON
+  sleep 0.5
 end
 
-puts "\n\n Seed data created successfully!"
-puts "Players used: #{players.count}"
-puts "Votes created: 100 (from last month)"
-puts "Date range: #{last_month_start.strftime('%d/%m/%Y')} - #{last_month_end.strftime('%d/%m/%Y')}"
-
-# Display top 10 ranking
-puts "\n Top 10 Last Month Ranking:"
-top_players = players.sort_by(&:last_month_valid_votes).reverse.first(10)
-top_players.each_with_index do |player, index|
-  puts "  #{index + 1}. #{player.in_game_name}: #{player.last_month_valid_votes} votes"
+puts "Traitement terminé: #{data.size} joueurs traités"
 end
-
