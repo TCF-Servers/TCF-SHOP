@@ -4,6 +4,7 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  attribute :role, :integer, default: 0
   enum role: { user: 0, admin: 1, superadmin: 2 }
 
   has_many :rcon_executions, dependent: :nullify
