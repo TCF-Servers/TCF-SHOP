@@ -150,10 +150,8 @@ namespace :discord do
                   if player
                     puts "Joueur trouvé: #{player.in_game_name} (correspondance avec '#{player_name}')"
 
-                    # Vérifier si le joueur a déjà voté trop de fois récemment
-                    recent_votes = player.recent_votes_count(VOTE_PERIOD_HOURS)
-
-                    if recent_votes < MAX_VOTES_PER_PERIOD
+                    # Vérifier si le joueur peut encore voter (avec marge de 5 minutes)
+                    if player.can_vote?(VOTE_PERIOD_HOURS, MAX_VOTES_PER_PERIOD)
                       # Créer un nouveau vote
                       vote = player.votes.create!(
                         source: "topserveur",
@@ -162,7 +160,7 @@ namespace :discord do
                         vote_valid: true
                       )
 
-                      puts "Vote enregistré pour #{player.in_game_name} (#{recent_votes + 1}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures)"
+                      puts "Vote enregistré pour #{player.in_game_name} (#{player.recent_votes_count(VOTE_PERIOD_HOURS)}/#{MAX_VOTES_PER_PERIOD} votes valides dans les dernières #{VOTE_PERIOD_HOURS} heures)"
 
                       if UNAUTHORIZED_IN_GAME_NAME.include?(player.in_game_name)
                         puts "Vote non traité pour #{player.in_game_name} (nom non autorisé)"
@@ -171,7 +169,7 @@ namespace :discord do
                         process_votes_batch([vote], player)
                       end
                     else
-                      puts " Limite de votes atteinte pour #{player.in_game_name} (#{recent_votes}/#{MAX_VOTES_PER_PERIOD} dans les dernières #{VOTE_PERIOD_HOURS} heures). Création d'un vote non valide."
+                      puts "Limite de votes atteinte pour #{player.in_game_name} (#{player.recent_votes_count(VOTE_PERIOD_HOURS)}/#{MAX_VOTES_PER_PERIOD} votes valides dans les dernières #{VOTE_PERIOD_HOURS} heures). Création d'un vote non valide."
                       vote = player.votes.create!(
                         source: "topserveur",
                         points_awarded: Vote.current_month_points,

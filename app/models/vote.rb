@@ -19,7 +19,7 @@ class Vote < ApplicationRecord
   # Méthode de classe pour vérifier si un joueur peut voter
   def self.player_can_vote?(player, hours = 2, max_votes = 3)
     return false unless player
-    player.votes.recent(hours).count < max_votes
+    player.can_vote?(hours, max_votes)
   end
 
 

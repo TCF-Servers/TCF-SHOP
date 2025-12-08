@@ -38,13 +38,19 @@ class Player < ApplicationRecord
   end
   
   # Méthode pour vérifier si le joueur peut voter
+  # Ne compte que les votes valides et ajoute une marge de 5 minutes
   def can_vote?(hours = 2, max_votes = 3)
-    votes.recent(hours).count < max_votes
+    recent = valid_votes.recent(hours).order(created_at: :asc)
+    return true if recent.count < max_votes
+
+    # Si on a 3 votes valides, vérifier que le plus ancien a plus de 2h + 5min
+    oldest_vote = recent.first
+    oldest_vote.created_at < (hours.hours + 5.minutes).ago
   end
   
-  # Méthode pour obtenir le nombre de votes récents (exclut les votes non processed)
+  # Méthode pour obtenir le nombre de votes valides récents
   def recent_votes_count(hours = 2)
-    votes.recent(hours).processed.count
+    valid_votes.recent(hours).count
   end
 
   def update_votes_count!
