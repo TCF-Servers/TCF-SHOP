@@ -1,6 +1,34 @@
 require 'rcon'
 require 'timeout'
 
+# Constantes définies en dehors de la boucle pour éviter les redéfinitions
+MAP_PORTS = {
+  'TheIsland_WP' => ENV['ISLAND_WP_RCON_PORT'].to_i,
+  'TheCenter_WP' => ENV['CENTER_WP_RCON_PORT'].to_i,
+  'ScorchedEarth_WP' => ENV['SCORCHED_EARTH_WP_RCON_PORT'].to_i,
+  'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
+  'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
+  'LostColony_WP' => ENV['LOST_COLONY_WP_RCON_PORT'].to_i,
+  'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
+  'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
+  'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
+}.freeze
+
+MAX_VOTES_PER_PERIOD = 3
+VOTE_PERIOD_HOURS = 2
+UNAUTHORIZED_IN_GAME_NAME = [
+  "survivor",
+  "survivant",
+  "joueur",
+  "un joueur",
+  "joueurs",
+  "player",
+  "humain",
+  "humains",
+  "human",
+].freeze
+
+RCON_TIMEOUT = ENV.fetch('RCON_TIMEOUT', 5).to_i
 
 namespace :discord do
   desc 'Start Discord bot'
@@ -18,38 +46,6 @@ namespace :discord do
         # Définir les constantes pour les channels
         vote_channel_id = ENV['VOTE_CHANNEL_ID']
         joinleave_channel_id = ENV['JOINLEAVE_CHANNEL_ID']
-
-        # Mapping des maps vers les ports RCON
-        MAP_PORTS = {
-          'TheIsland_WP' => ENV['ISLAND_WP_RCON_PORT'].to_i,
-          'TheCenter_WP' => ENV['CENTER_WP_RCON_PORT'].to_i,
-          'ScorchedEarth_WP' => ENV['SCORCHED_EARTH_WP_RCON_PORT'].to_i,
-          'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
-          'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
-          'LostColonny_WP' => ENV['LOST_COLONY_WP_RCON_PORT'].to_i,
-          'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
-          'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
-          'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
-          # Ajoutez d'autres maps avec leurs ports respectifs
-          # 'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
-          # 'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
-          # etc.
-        }
-
-        # Configuration des votes
-        MAX_VOTES_PER_PERIOD = 3
-        VOTE_PERIOD_HOURS = 2
-        UNAUTHORIZED_IN_GAME_NAME = [
-          "survivor",
-          "survivant",
-          "joueur",
-          "un joueur",
-          "joueurs",
-          "player",
-          "humain",
-          "humains",
-          "human",
-        ]
 
         # Ajouter un gestionnaire d'erreurs pour éviter que le bot ne se ferme
         bot.heartbeat do
@@ -219,28 +215,31 @@ namespace :discord do
           end
         end
 
-        def handle_rcon_command(command, port = nil, vote = nil)
+        def handle_rcon_command(command, port = nil)
+          client = nil
           begin
-            Timeout::timeout(5) do
+            Timeout::timeout(RCON_TIMEOUT) do
               client = Rcon::Client.new(
                 host: ENV['RCON_HOST'],
                 port: port || ENV['ISLAND_WP_RCON_PORT'].to_i,
                 password: ENV['RCON_PASSWORD']
               )
               client.authenticate!(ignore_first_packet: false)
-              puts "Commande RCON: #{command} (port: #{port} | client: #{client.send(:host)}:#{client.send(:port)}, #{client.send(:socket)})"
+              puts "Commande RCON: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
               response = client.execute(command)
-              puts "Commande RCON exécutée: #{command} (port: #{port || ENV['ISLAND_WP_RCON_PORT']})"
+              puts "Commande RCON exécutée: #{command}"
               puts "Réponse: #{response.body}"
 
               return true
             end
           rescue Timeout::Error
-            puts "Timeout RCON (5s) pour la commande: #{command}"
+            puts "Timeout RCON (#{RCON_TIMEOUT}s) pour la commande: #{command}"
             return false
           rescue => e
             puts "Erreur RCON: #{e.message}"
             return false
+          ensure
+            client&.end_session! rescue nil
           end
         end
 
@@ -248,13 +247,14 @@ namespace :discord do
           return if votes.empty?
 
           processed_count = 0
+          mutex = Mutex.new
 
           # Traiter les votes de manière asynchrone avec un pool de threads
           threads = []
           votes.each do |vote|
             threads << Thread.new do
               if process_vote(vote, player)
-                processed_count += 1
+                mutex.synchronize { processed_count += 1 }
               end
             end
 
