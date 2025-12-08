@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>The Campfire - Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="admin-layout" data-controller="sidebar">
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="admin-sidebar-overlay"
+         data-sidebar-target="overlay"
+         data-action="click->sidebar#close"></div>
+
+    <!-- Sidebar -->
+    <%= render "admin/shared/sidebar" %>
+
+    <!-- Main Content -->
+    <main class="admin-main">
+      <%= render "admin/shared/header" %>
+
+      <div class="admin-content">
+        <%= render "shared/flashes" %>
+        <%= yield %>
+      </div>
+    </main>
+  </body>
+</html>

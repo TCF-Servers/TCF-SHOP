@@ -1,0 +1,21 @@
+<header class="admin-header">
+  <div class="admin-header-left">
+    <button class="admin-menu-toggle" data-action="click->sidebar#toggle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <h1 class="admin-page-title"><%= content_for?(:page_title) ? yield(:page_title) : "Dashboard" %></h1>
+  </div>
+  <div class="admin-header-right">
+    <span class="admin-header-time" data-controller="time" data-time-target="display">
+      <%= Time.current.strftime("%d %b %Y - %H:%M") %>
+    </span>
+    <div class="admin-server-status">
+      <span class="dot"></span>
+      <span>Serveurs en ligne</span>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<sql>
+  <datatypes db="postgresql">
+    <group label="Numeric" color="rgb(238,238,170)">
+      <type label="Integer" sql="INTEGER"/>
+      <type label="Bigint" sql="BIGINT"/>
+      <type label="Smallint" sql="SMALLINT"/>
+      <type label="Decimal" sql="DECIMAL"/>
+      <type label="Numeric" sql="NUMERIC"/>
+      <type label="Real" sql="REAL"/>
+      <type label="Double" sql="DOUBLE PRECISION"/>
+      <type label="Serial" sql="SERIAL"/>
+      <type label="Bigserial" sql="BIGSERIAL"/>
+    </group>
+    <group label="Character" color="rgb(255,200,200)">
+      <type label="Char" sql="CHAR"/>
+      <type label="Varchar" sql="VARCHAR"/>
+      <type label="Text" sql="TEXT"/>
+    </group>
+    <group label="Date &amp; Time" color="rgb(200,255,200)">
+      <type label="Date" sql="DATE"/>
+      <type label="Time" sql="TIME"/>
+      <type label="Timestamp" sql="TIMESTAMP"/>
+      <type label="Interval" sql="INTERVAL"/>
+    </group>
+    <group label="Boolean" color="rgb(200,200,255)">
+      <type label="Boolean" sql="BOOLEAN"/>
+    </group>
+  </datatypes>
+
+  <table name="users" x="50" y="50">
+    <row name="id" null="0" autoincrement="1">
+      <datatype>BIGSERIAL</datatype>
+      <key>PRIMARY</key>
+    </row>
+    <row name="email" null="0">
+      <datatype>VARCHAR(255)</datatype>
+      <key>UNIQUE</key>
+    </row>
+    <row name="encrypted_password" null="0">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="reset_password_token" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="reset_password_sent_at" null="1">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="remember_created_at" null="1">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="role" null="0" default="0">
+      <datatype>INTEGER</datatype>
+      <comment>0=user, 1=admin, 2=superadmin</comment>
+    </row>
+    <row name="created_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="updated_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+  </table>
+
+  <table name="players" x="350" y="50">
+    <row name="id" null="0" autoincrement="1">
+      <datatype>BIGSERIAL</datatype>
+      <key>PRIMARY</key>
+    </row>
+    <row name="platform_name" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="in_game_name" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="eos_id" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="tribe_id" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="tribe_name" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="discord_name" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="discord_id" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="votes_count" null="1">
+      <datatype>INTEGER</datatype>
+    </row>
+    <row name="created_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="updated_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+  </table>
+
+  <table name="game_sessions" x="650" y="50">
+    <row name="id" null="0" autoincrement="1">
+      <datatype>BIGSERIAL</datatype>
+      <key>PRIMARY</key>
+    </row>
+    <row name="player_id" null="0">
+      <datatype>BIGINT</datatype>
+      <relation table="players" row="id"/>
+    </row>
+    <row name="map_name" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="online" null="1" default="false">
+      <datatype>BOOLEAN</datatype>
+    </row>
+    <row name="created_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="updated_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+  </table>
+
+  <table name="votes" x="650" y="300">
+    <row name="id" null="0" autoincrement="1">
+      <datatype>BIGSERIAL</datatype>
+      <key>PRIMARY</key>
+    </row>
+    <row name="player_id" null="0">
+      <datatype>BIGINT</datatype>
+      <relation table="players" row="id"/>
+    </row>
+    <row name="source" null="1" default="topserveur">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="points_awarded" null="1" default="100">
+      <datatype>INTEGER</datatype>
+    </row>
+    <row name="processed" null="1" default="false">
+      <datatype>BOOLEAN</datatype>
+    </row>
+    <row name="vote_valid" null="1">
+      <datatype>BOOLEAN</datatype>
+    </row>
+    <row name="map_name" null="1">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="created_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="updated_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+  </table>
+
+  <table name="rcon_command_templates" x="50" y="350">
+    <row name="id" null="0" autoincrement="1">
+      <datatype>BIGSERIAL</datatype>
+      <key>PRIMARY</key>
+    </row>
+    <row name="name" null="0">
+      <datatype>VARCHAR(255)</datatype>
+      <key>UNIQUE</key>
+    </row>
+    <row name="command_template" null="0">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="description" null="1">
+      <datatype>TEXT</datatype>
+    </row>
+    <row name="required_role" null="0" default="1">
+      <datatype>INTEGER</datatype>
+      <comment>1=admin, 2=superadmin</comment>
+    </row>
+    <row name="requires_player" null="0" default="true">
+      <datatype>BOOLEAN</datatype>
+    </row>
+    <row name="enabled" null="0" default="true">
+      <datatype>BOOLEAN</datatype>
+    </row>
+    <row name="created_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="updated_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+  </table>
+
+  <table name="rcon_executions" x="350" y="350">
+    <row name="id" null="0" autoincrement="1">
+      <datatype>BIGSERIAL</datatype>
+      <key>PRIMARY</key>
+    </row>
+    <row name="user_id" null="0">
+      <datatype>BIGINT</datatype>
+      <relation table="users" row="id"/>
+    </row>
+    <row name="player_id" null="1">
+      <datatype>BIGINT</datatype>
+      <relation table="players" row="id"/>
+    </row>
+    <row name="rcon_command_template_id" null="1">
+      <datatype>BIGINT</datatype>
+      <relation table="rcon_command_templates" row="id"/>
+    </row>
+    <row name="map" null="0">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="full_command" null="0">
+      <datatype>VARCHAR(255)</datatype>
+    </row>
+    <row name="response" null="1">
+      <datatype>TEXT</datatype>
+    </row>
+    <row name="success" null="0">
+      <datatype>BOOLEAN</datatype>
+    </row>
+    <row name="created_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+    <row name="updated_at" null="0">
+      <datatype>TIMESTAMP</datatype>
+    </row>
+  </table>
+
+</sql>

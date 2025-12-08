@@ -14,4 +14,5 @@ Rails.application.routes.draw do
   get '/healthcheck', to: 'application#healthcheck'
 
   get :ranking, to: 'pages#ranking'
+  get :dashboard, to: 'dashboard#index'
 end

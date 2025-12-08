@@ -1,0 +1,189 @@
+<% content_for(:page_title) { "Dashboard" } %>
+
+<!-- Stats Cards -->
+<div class="admin-stats-grid">
+  <div class="admin-stat-card">
+    <div class="admin-stat-icon players">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    </div>
+    <div class="admin-stat-content pt-3">
+      <span class="admin-stat-value me-1"><%= @online_players_count %></span>
+      <span class="admin-stat-label">Joueurs en ligne</span>
+    </div>
+  </div>
+
+  <div class="admin-stat-card">
+    <div class="admin-stat-icon votes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+      </svg>
+    </div>
+    <div class="admin-stat-content pt-3">
+      <span class="admin-stat-value me-1"><%= @today_votes_count %></span>
+      <span class="admin-stat-label">Votes aujourd'hui</span>
+    </div>
+  </div>
+
+  <div class="admin-stat-card">
+    <div class="admin-stat-icon commands">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="4 17 10 11 4 5"/>
+        <line x1="12" y1="19" x2="20" y2="19"/>
+      </svg>
+    </div>
+    <div class="admin-stat-content pt-3">
+      <span class="admin-stat-value me-1"><%= @today_commands_count %></span>
+      <span class="admin-stat-label">Commandes RCON</span>
+    </div>
+  </div>
+
+  <div class="admin-stat-card">
+    <div class="admin-stat-icon total">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+        <polyline points="2 17 12 22 22 17"/>
+        <polyline points="2 12 12 17 22 12"/>
+      </svg>
+    </div>
+    <div class="admin-stat-content pt-3">
+      <span class="admin-stat-value me-1"><%= number_with_delimiter(@total_players_count) %></span>
+      <span class="admin-stat-label">Joueurs total</span>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="admin-section">
+  <div class="admin-section-header">
+    <h2 class="admin-section-title">
+      <span class="admin-section-title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </span>
+      Activité récente
+    </h2>
+    <%= link_to "#", class: "admin-section-link" do %>
+      Voir tout l'historique
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    <% end %>
+  </div>
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Admin</th>
+          <th>Commande</th>
+          <th>Joueur</th>
+          <th>Map</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @recent_executions.each do |execution| %>
+          <tr>
+            <td class="admin-table-date"><%= execution.created_at.strftime("%d/%m %H:%M") %></td>
+            <td>
+              <div class="admin-table-admin">
+                <div class="admin-table-admin-avatar"><%= execution.user.email.first.upcase %></div>
+                <span><%= execution.user.email.split("@").first %></span>
+              </div>
+            </td>
+            <td>
+              <span class="admin-table-command"><%= execution.full_command.truncate(35) %></span>
+            </td>
+            <td><%= execution.player&.in_game_name || "-" %></td>
+            <td>
+              <span class="admin-table-map">
+                <span class="admin-table-map-dot"></span>
+                <%= execution.map.gsub("_WP", "") %>
+              </span>
+            </td>
+            <td>
+              <span class="admin-status-badge <%= execution.success? ? 'success' : 'error' %>">
+                <% if execution.success? %>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Succes
+                <% else %>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  Echec
+                <% end %>
+              </span>
+            </td>
+          </tr>
+        <% end %>
+        <% if @recent_executions.empty? %>
+          <tr>
+            <td colspan="6" class="admin-table-empty">Aucune activite recente</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Online Players -->
+<div class="admin-section">
+  <div class="admin-section-header">
+    <h2 class="admin-section-title">
+      <span class="admin-section-title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </span>
+      Joueurs en ligne
+    </h2>
+    <%= link_to "#", class: "admin-section-link" do %>
+      Voir tous les joueurs
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    <% end %>
+  </div>
+  <div class="admin-players-grid">
+    <% @online_players.each do |player| %>
+      <div class="admin-player-card">
+        <div class="admin-player-avatar"><%= player.in_game_name.first.upcase %></div>
+        <div class="admin-player-info">
+          <span class="admin-player-name"><%= player.in_game_name %></span>
+          <span class="admin-player-map"><%= player.current_map %></span>
+        </div>
+        <div class="admin-player-actions">
+          <%= link_to "#", class: "admin-player-action", title: "Executer commande" do %>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="4 17 10 11 4 5"/>
+              <line x1="12" y1="19" x2="20" y2="19"/>
+            </svg>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <% if @online_players.empty? %>
+      <div class="admin-players-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Aucun joueur en ligne</span>
+      </div>
+    <% end %>
+  </div>
+</div>
