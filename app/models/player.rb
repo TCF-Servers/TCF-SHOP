@@ -2,6 +2,7 @@ class Player < ApplicationRecord
   has_one :game_session, dependent: :destroy
   has_many :votes, dependent: :destroy
   has_many :valid_votes, -> { where(vote_valid: true) }, class_name: 'Vote'
+  has_many :rcon_executions, dependent: :nullify
   
   # Configuration de pg_search
   include PgSearch::Model

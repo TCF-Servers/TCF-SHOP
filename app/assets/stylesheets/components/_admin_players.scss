@@ -1,0 +1,93 @@
+// Admin Players Grid
+@import "../config/admin_theme";
+
+.admin-players-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.admin-player-card {
+  background: $admin-bg-card;
+  border: 1px solid $admin-border-subtle;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $admin-border-medium;
+    background: $admin-bg-elevated;
+  }
+}
+
+.admin-player-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: $avatar-gradient-indigo;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  color: white;
+  position: relative;
+  flex-shrink: 0;
+
+  &.online::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 12px;
+    height: 12px;
+    background: $admin-success;
+    border: 2px solid $admin-bg-card;
+    border-radius: 50%;
+  }
+
+  // Avatar color variants
+  &.red { background: $avatar-gradient-red; }
+  &.green { background: $avatar-gradient-green; }
+  &.purple { background: $avatar-gradient-purple; }
+  &.orange { background: $avatar-gradient-orange; }
+  &.cyan { background: $avatar-gradient-cyan; }
+  &.pink { background: $avatar-gradient-pink; }
+  &.blue { background: $avatar-gradient-blue; }
+}
+
+.admin-player-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-player-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: $admin-text-primary;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-player-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: $admin-text-muted;
+}
+
+.admin-player-map {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-player-time {
+  opacity: 0.7;
+}

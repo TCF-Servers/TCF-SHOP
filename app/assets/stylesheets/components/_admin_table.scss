@@ -1,0 +1,213 @@
+// Admin Table Styles
+@import "../config/admin_theme";
+
+.admin-section {
+  margin-bottom: 32px;
+}
+
+.admin-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.admin-section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $admin-text-primary;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-section-title-icon {
+  width: 32px;
+  height: 32px;
+  background: $admin-accent-glow;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $admin-accent-orange;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.admin-section-action,
+.admin-section-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: $admin-accent-orange;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    color: $admin-accent-orange-light;
+    text-decoration: none;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.admin-table-container {
+  background: $admin-bg-card;
+  border: 1px solid $admin-border-subtle;
+  border-radius: 16px;
+  overflow: hidden;
+  max-height: 350px;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    overflow-x: auto;
+  }
+}
+
+.admin-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  @media (max-width: 768px) {
+    min-width: 700px;
+  }
+
+  th {
+    text-align: left;
+    padding: 14px 20px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $admin-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: $admin-bg-elevated;
+    border-bottom: 1px solid $admin-border-subtle;
+  }
+
+  td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: $admin-text-secondary;
+    border-bottom: 1px solid $admin-border-subtle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+}
+
+.admin-table-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: $admin-text-muted;
+}
+
+.admin-table-admin {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-table-admin-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: $avatar-gradient-purple;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+
+  &.blue { background: $avatar-gradient-blue; }
+  &.orange { background: $avatar-gradient-orange; }
+  &.red { background: $avatar-gradient-red; }
+  &.green { background: $avatar-gradient-green; }
+}
+
+.admin-table-command {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: $admin-text-primary;
+  background: $admin-bg-elevated;
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-table-map {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: $admin-bg-elevated;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: $admin-text-secondary;
+}
+
+.admin-table-map-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+
+  &.island { background: $map-island; }
+  &.scorched { background: $map-scorched; }
+  &.aberration { background: $map-aberration; }
+  &.extinction { background: $map-extinction; }
+  &.genesis { background: $map-genesis; }
+  &.ragnarok { background: $map-ragnarok; }
+  &.valguero { background: $map-valguero; }
+  &.center { background: $map-center; }
+  &.lost-colony { background: $map-lost-colony; }
+}
+
+.admin-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.success {
+    background: $admin-success-bg;
+    color: $admin-success;
+  }
+
+  &.error {
+    background: $admin-error-bg;
+    color: $admin-error;
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}

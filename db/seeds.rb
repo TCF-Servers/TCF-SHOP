@@ -1,89 +1,150 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
+# Seed pour créer des joueurs de test en ligne
 
-require 'rcon'
-require 'timeout'
+MAPS = %w[
+  TheIsland_WP
+  TheCenter_WP
+  ScorchedEarth_WP
+  Aberration_WP
+  Ragnarok_WP
+  Extinction_WP
+  Valguero_WP
+]
 
-# Mapping des maps vers les ports RCON (identique au bot Discord)
-MAP_PORTS = {
-  'TheIsland_WP' => ENV['ISLAND_WP_RCON_PORT'].to_i,
-  'TheCenter_WP' => ENV['CENTER_WP_RCON_PORT'].to_i,
-  'ScorchedEarth_WP' => ENV['SCORCHED_EARTH_WP_RCON_PORT'].to_i,
-  'Aberration_WP' => ENV['ABERRATION_WP_RCON_PORT'].to_i,
-  'Ragnarok_WP' => ENV['RAGNAROK_WP_RCON_PORT'].to_i,
-  'LostColonny_WP' => ENV['LOST_COLONY_WP_RCON_PORT'].to_i,
-  'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
-  'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
-  'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
-}
+PLAYER_NAMES = %w[
+  DarkWolf
+  ShadowHunter
+  NightRaven
+  StormBreaker
+  IronClaw
+  FireDragon
+  IcePhoenix
+  ThunderBolt
+  SilentArrow
+  BloodMoon
+  CrimsonBlade
+  FrostBite
+  VenomStrike
+  SteelFang
+  GhostRider
+  DeathBringer
+  WarHammer
+  NightStalker
+  SoulReaper
+  DoomSlayer
+]
 
-# Récupération des données (uniquement les votes valides)
-data = Vote
-  .joins(player: :game_session)
-  .where(created_at: Date.current.beginning_of_month..Date.current.end_of_month)
-  .where(vote_valid: true)
-  .group("players.eos_id, game_sessions.map_name, game_sessions.online")
-  .select("players.eos_id, COUNT(votes.id) as vote_count, game_sessions.map_name, game_sessions.online")
-  .map do |v|
-    rcon_port = if v.online
-                  MAP_PORTS[v.map_name] || ENV['ISLAND_WP_RCON_PORT'].to_i
-                else
-                  ENV['ISLAND_WP_RCON_PORT'].to_i
-                end
+puts "Suppression des anciennes données..."
+GameSession.destroy_all
+Player.destroy_all
 
-    {
-      eos_id: v.eos_id,
-      vote_count: v.vote_count,
-      rcon_port: rcon_port
-    }
-  end
+puts "Création de #{PLAYER_NAMES.size} joueurs..."
 
-# Fonction pour exécuter une commande RCON
-def execute_rcon_command(command, port)
-  begin
-    Timeout::timeout(5) do
-      client = Rcon::Client.new(
-        host: ENV['RCON_HOST'],
-        port: port,
-        password: ENV['RCON_PASSWORD']
-      )
-      client.authenticate!(ignore_first_packet: false)
-      puts "Commande RCON: #{command} (port: #{port})"
-      response = client.execute(command)
-      puts "Réponse: #{response.body}"
-      return true
-    end
-  rescue Timeout::Error
-    puts "Timeout RCON (5s) pour la commande: #{command} sur le port #{port}"
-    return false
-  rescue => e
-    puts "Erreur RCON: #{e.message}"
-    return false
-  end
+PLAYER_NAMES.each_with_index do |name, i|
+  player = Player.create!(
+    platform_name: "Steam_#{name.downcase}",
+    in_game_name: name,
+    eos_id: "00#{SecureRandom.hex(16)}",
+    tribe_id: rand(1000..9999).to_s,
+    tribe_name: ["Les Guerriers", "Shadow Tribe", "Phoenix Rising", "Iron Legion", "Night Wolves"].sample,
+    discord_name: "#{name.downcase}##{rand(1000..9999)}",
+    discord_id: rand(100000000000000000..999999999999999999).to_s,
+    votes_count: rand(0..50)
+  )
+
+  # Tous les joueurs sont en ligne
+  player.create_game_session!(
+    map_name: MAPS.sample,
+    online: true
+  )
+
+  puts "  - #{name} créé (#{player.current_map})"
 end
 
-# Itération sur les données et exécution des commandes RCON
-data.each do |player_data|
-  eos_id = player_data[:eos_id]
-  vote_count = player_data[:vote_count]
-  rcon_port = player_data[:rcon_port]
-  points = 150 * vote_count
+puts "Seed terminé: #{Player.count} joueurs créés, #{GameSession.where(online: true).count} en ligne"
 
-  command = "AddPoints #{eos_id} #{points}"
+# Création des utilisateurs admin
+puts "\nCréation des utilisateurs admin..."
+RconExecution.destroy_all
+RconCommandTemplate.destroy_all
+User.where.not(role: :superadmin).destroy_all
 
-  puts "Traitement du joueur #{eos_id}: #{vote_count} votes = #{points} points (port: #{rcon_port})"
+admins = [
+  { email: "admin@tcf.com", password: "password123", role: :admin },
+  { email: "moderator@tcf.com", password: "password123", role: :admin },
+  { email: "manager@tcf.com", password: "password123", role: :superadmin }
+]
 
-  success = execute_rcon_command(command, rcon_port)
-
-  if success
-    puts "✓ Points ajoutés avec succès pour #{eos_id}"
-  else
-    puts "✗ Échec de l'ajout de points pour #{eos_id}"
+created_admins = admins.map do |admin_data|
+  user = User.find_or_create_by!(email: admin_data[:email]) do |u|
+    u.password = admin_data[:password]
+    u.role = admin_data[:role]
   end
-
-  # Petite pause pour éviter de surcharger le serveur RCON
-  sleep 0.5
+  puts "  - #{user.email} (#{user.role})"
+  user
 end
 
-puts "Traitement terminé: #{data.size} joueurs traités"
+# Création des templates de commandes RCON
+puts "\nCréation des templates RCON..."
+templates = [
+  { name: "AddPoints", command_template: "AddPoints {eos_id} {amount}", description: "Ajouter des points à un joueur", required_role: :admin, requires_player: true },
+  { name: "GiveItem", command_template: "GiveItemToPlayer {eos_id} {item_id} {quantity} {quality}", description: "Donner un item à un joueur", required_role: :admin, requires_player: true },
+  { name: "Kick", command_template: "KickPlayer {eos_id}", description: "Expulser un joueur du serveur", required_role: :admin, requires_player: true },
+  { name: "Ban", command_template: "BanPlayer {eos_id}", description: "Bannir un joueur", required_role: :superadmin, requires_player: true },
+  { name: "Broadcast", command_template: "Broadcast {message}", description: "Envoyer un message global", required_role: :admin, requires_player: false },
+  { name: "SaveWorld", command_template: "SaveWorld", description: "Sauvegarder le monde", required_role: :superadmin, requires_player: false }
+]
+
+created_templates = templates.map do |t|
+  template = RconCommandTemplate.create!(t)
+  puts "  - #{template.name}"
+  template
+end
+
+# Création des exécutions RCON
+puts "\nCréation des exécutions RCON..."
+players = Player.all.to_a
+
+executions_data = [
+  { template: "AddPoints", command: "AddPoints {eos_id} 500", success: true, response: "Points added successfully" },
+  { template: "AddPoints", command: "AddPoints {eos_id} 1000", success: true, response: "Points added successfully" },
+  { template: "GiveItem", command: "GiveItemToPlayer {eos_id} PrimalItemResource_Metal_C 100 0", success: true, response: "Item given" },
+  { template: "Kick", command: "KickPlayer {eos_id}", success: true, response: "Player kicked" },
+  { template: "Broadcast", command: "Broadcast Maintenance dans 30 minutes!", success: true, response: "Message sent" },
+  { template: "AddPoints", command: "AddPoints {eos_id} 250", success: false, response: "Player not found" },
+  { template: "SaveWorld", command: "SaveWorld", success: true, response: "World saved" },
+  { template: "GiveItem", command: "GiveItemToPlayer {eos_id} PrimalItemAmmo_Bullet_C 50 0", success: true, response: "Item given" },
+  { template: nil, command: "ListPlayers", success: true, response: "20 players online" },
+  { template: "AddPoints", command: "AddPoints {eos_id} 750", success: true, response: "Points added successfully" },
+  { template: "Kick", command: "KickPlayer {eos_id}", success: false, response: "Connection timeout" },
+  { template: nil, command: "GetChat", success: true, response: "Chat log retrieved" },
+  { template: "Broadcast", command: "Broadcast Event PvP ce soir à 21h!", success: true, response: "Message sent" },
+  { template: "AddPoints", command: "AddPoints {eos_id} 300", success: true, response: "Points added successfully" },
+  { template: "GiveItem", command: "GiveItemToPlayer {eos_id} PrimalItemResource_Polymer_C 200 0", success: true, response: "Item given" }
+]
+
+executions_data.each_with_index do |exec_data, i|
+  template = exec_data[:template] ? created_templates.find { |t| t.name == exec_data[:template] } : nil
+  player = template&.requires_player ? players.sample : nil
+  admin = created_admins.sample
+
+  full_command = exec_data[:command].gsub("{eos_id}", player&.eos_id || "unknown")
+
+  execution = RconExecution.create!(
+    user: admin,
+    player: player,
+    rcon_command_template: template,
+    map: MAPS.sample,
+    full_command: full_command,
+    response: exec_data[:response],
+    success: exec_data[:success],
+    created_at: rand(1..48).hours.ago
+  )
+
+  puts "  - #{execution.full_command[0..40]}... (#{execution.success? ? 'OK' : 'FAIL'})"
+end
+
+puts "\nSeed complet!"
+puts "  - #{Player.count} joueurs"
+puts "  - #{User.count} utilisateurs"
+puts "  - #{RconCommandTemplate.count} templates RCON"
+puts "  - #{RconExecution.count} exécutions RCON"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_08_31_124802) do
+ActiveRecord::Schema[7.1].define(version: 2025_12_08_115614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -37,6 +37,36 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_31_124802) do
     t.integer "votes_count"
   end
 
+  create_table "rcon_command_templates", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "command_template", null: false
+    t.text "description"
+    t.integer "required_role", default: 1, null: false
+    t.boolean "requires_player", default: true, null: false
+    t.boolean "enabled", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["enabled"], name: "index_rcon_command_templates_on_enabled"
+    t.index ["name"], name: "index_rcon_command_templates_on_name", unique: true
+  end
+
+  create_table "rcon_executions", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "player_id"
+    t.bigint "rcon_command_template_id"
+    t.string "map", null: false
+    t.string "full_command", null: false
+    t.text "response"
+    t.boolean "success", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_rcon_executions_on_created_at"
+    t.index ["player_id"], name: "index_rcon_executions_on_player_id"
+    t.index ["rcon_command_template_id"], name: "index_rcon_executions_on_rcon_command_template_id"
+    t.index ["success"], name: "index_rcon_executions_on_success"
+    t.index ["user_id"], name: "index_rcon_executions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -45,6 +75,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_31_124802) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "role", default: 0, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -63,5 +94,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_08_31_124802) do
   end
 
   add_foreign_key "game_sessions", "players"
+  add_foreign_key "rcon_executions", "players"
+  add_foreign_key "rcon_executions", "rcon_command_templates"
+  add_foreign_key "rcon_executions", "users"
   add_foreign_key "votes", "players"
 end
