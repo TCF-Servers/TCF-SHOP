@@ -1,147 +1,187 @@
-<div class="container mt-4">
-  <div class="row">
-    <div class="col-12">
-      <h1 class="text-center mb-4">🏆 Classement des Votes</h1>
-      
-      <!-- Bootstrap 5.2 Tabs -->
-      <ul class="nav nav-tabs" id="rankingTabs" role="tablist">
-        <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="current-month-tab" data-bs-toggle="tab" data-bs-target="#current-month" type="button" role="tab" aria-controls="current-month" aria-selected="true">
-            <i class="fas fa-calendar-alt me-2"></i>Mois Actuel
-          </button>
-        </li>
-        <li class="nav-item" role="presentation">
-          <button class="nav-link" id="last-month-tab" data-bs-toggle="tab" data-bs-target="#last-month" type="button" role="tab" aria-controls="last-month" aria-selected="false">
-            <i class="fas fa-history me-2"></i>Mois Précédent
-          </button>
-        </li>
-      </ul>
+<div class="ranking-page">
+  <div class="ranking-container">
+    <!-- Header -->
+    <div class="ranking-header">
+      <div class="ranking-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <polyline points="2 17 12 22 22 17"/>
+          <polyline points="2 12 12 17 22 12"/>
+        </svg>
+      </div>
+      <h1 class="ranking-title">Classement des Votes</h1>
+      <p class="ranking-subtitle">The Campfire Servers - Recompenses mensuelles</p>
+    </div>
 
-      <!-- Tab Content -->
-      <div class="tab-content" id="rankingTabsContent">
-        <!-- Current Month Tab -->
-        <div class="tab-pane fade show active" id="current-month" role="tabpanel" aria-labelledby="current-month-tab">
-          <div class="card mt-3">
-            <div class="card-header">
-              <h5 class="card-title mb-0">
-                <i class="fas fa-trophy text-warning me-2"></i>
-                Classement du Mois Actuel (<%= Date.current.strftime("%B %Y") %>)
-              </h5>
+    <!-- Tabs -->
+    <div data-controller="tabs">
+      <div class="ranking-tabs">
+        <button class="ranking-tab active" data-tabs-target="tab" data-action="click->tabs#switch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Mois Actuel
+        </button>
+        <button class="ranking-tab" data-tabs-target="tab" data-action="click->tabs#switch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Mois Precedent
+        </button>
+      </div>
+
+      <!-- Current Month -->
+      <div class="ranking-tab-content active" data-tabs-target="content">
+        <div class="ranking-card">
+          <div class="ranking-card-header">
+            <div class="ranking-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="8" r="7"/>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+              </svg>
             </div>
-            <div class="card-body">
-              <% if @current_month_ranking.any? %>
-                <div class="table-responsive">
-                  <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Joueur</th>
-                        <th scope="col">Votes</th>
-                        <th scope="col">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% @current_month_ranking.each_with_index do |player, index| %>
-                        <tr>
-                          <td>
-                            <% if index == 0 %>
-                              <span class="badge bg-warning text-dark">🥇 1er</span>
-                            <% elsif index == 1 %>
-                              <span class="badge bg-secondary">🥈 2ème</span>
-                            <% elsif index == 2 %>
-                              <span class="badge bg-warning">🥉 3ème</span>
-                            <% else %>
-                              <span class="badge bg-primary"><%= index + 1 %></span>
-                            <% end %>
-                          </td>
-                          <td>
-                            <strong><%= player.in_game_name %></strong>
-                          </td>
-                          <td>
-                            <span class="badge bg-success fs-6"><%= player.current_month_valid_votes %> votes</span>
-                          </td>
-                          <td>
-                            <span class="badge bg-info fs-6"><%= player.votes_count || 0 %> total</span>
-                          </td>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                  </table>
-                </div>
-              <% else %>
-                <div class="text-center py-5">
-                  <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                  <p class="text-muted">Aucun vote enregistré pour ce mois.</p>
-                </div>
-              <% end %>
-            </div>
+            <h2 class="ranking-card-title">Classement du Mois</h2>
+            <span class="ranking-card-period"><%= I18n.l(Date.current, format: "%B %Y").capitalize %></span>
           </div>
+
+          <% if @current_month_ranking.any? %>
+            <table class="ranking-table">
+              <thead>
+                <tr>
+                  <th>Rang</th>
+                  <th>Joueur</th>
+                  <th>Votes ce mois</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @current_month_ranking.each_with_index do |player, index| %>
+                  <tr>
+                    <td>
+                      <% case index %>
+                      <% when 0 %>
+                        <span class="ranking-position gold">1er</span>
+                      <% when 1 %>
+                        <span class="ranking-position silver">2e</span>
+                      <% when 2 %>
+                        <span class="ranking-position bronze">3e</span>
+                      <% else %>
+                        <span class="ranking-position default"><%= index + 1 %></span>
+                      <% end %>
+                    </td>
+                    <td>
+                      <div class="ranking-player">
+                        <div class="ranking-player-avatar"><%= player.in_game_name.first.upcase %></div>
+                        <span class="ranking-player-name"><%= player.in_game_name %></span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="ranking-votes">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                        </svg>
+                        <%= player.current_month_valid_votes %>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="ranking-total"><%= player.votes_count || 0 %> total</span>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="ranking-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <p>Aucun vote enregistre pour ce mois.</p>
+            </div>
+          <% end %>
         </div>
+      </div>
 
-        <!-- Last Month Tab -->
-        <div class="tab-pane fade" id="last-month" role="tabpanel" aria-labelledby="last-month-tab">
-          <div class="card mt-3">
-            <div class="card-header">
-              <h5 class="card-title mb-0">
-                <i class="fas fa-medal text-info me-2"></i>
-                Classement du Mois Précédent (<%= Date.current.last_month.strftime("%B %Y") %>)
-              </h5>
+      <!-- Last Month -->
+      <div class="ranking-tab-content" data-tabs-target="content">
+        <div class="ranking-card">
+          <div class="ranking-card-header">
+            <div class="ranking-card-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
             </div>
-            <div class="card-body">
-              <% if @last_month_ranking.any? %>
-                <div class="table-responsive">
-                  <table class="table table-striped table-hover">
-                    <thead class="table-dark">
-                      <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Joueur</th>
-                        <th scope="col">Votes</th>
-                        <th scope="col">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% @last_month_ranking.each_with_index do |player, index| %>
-                        <tr>
-                          <td>
-                            <% if index == 0 %>
-                              <span class="badge bg-warning text-dark">🥇 1er</span>
-                            <% elsif index == 1 %>
-                              <span class="badge bg-secondary">🥈 2ème</span>
-                            <% elsif index == 2 %>
-                              <span class="badge bg-warning">🥉 3ème</span>
-                            <% else %>
-                              <span class="badge bg-primary"><%= index + 1 %></span>
-                            <% end %>
-                          </td>
-                          <td>
-                            <strong><%= player.in_game_name %></strong>
-                          </td>
-                          <td>
-                            <span class="badge bg-info fs-6"><%= player.last_month_valid_votes %> votes</span>
-                          </td>
-                          <td>
-                            <span class="badge bg-info fs-6"><%= player.votes_count || 0 %> total</span>
-                          </td>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                  </table>
-                </div>
-              <% else %>
-                <div class="text-center py-5">
-                  <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                  <p class="text-muted">Aucun vote enregistré pour le mois précédent.</p>
-                </div>
-              <% end %>
-            </div>
+            <h2 class="ranking-card-title">Classement du Mois Precedent</h2>
+            <span class="ranking-card-period"><%= I18n.l(Date.current.last_month, format: "%B %Y").capitalize %></span>
           </div>
+
+          <% if @last_month_ranking.any? %>
+            <table class="ranking-table">
+              <thead>
+                <tr>
+                  <th>Rang</th>
+                  <th>Joueur</th>
+                  <th>Votes</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @last_month_ranking.each_with_index do |player, index| %>
+                  <tr>
+                    <td>
+                      <% case index %>
+                      <% when 0 %>
+                        <span class="ranking-position gold">1er</span>
+                      <% when 1 %>
+                        <span class="ranking-position silver">2e</span>
+                      <% when 2 %>
+                        <span class="ranking-position bronze">3e</span>
+                      <% else %>
+                        <span class="ranking-position default"><%= index + 1 %></span>
+                      <% end %>
+                    </td>
+                    <td>
+                      <div class="ranking-player">
+                        <div class="ranking-player-avatar"><%= player.in_game_name.first.upcase %></div>
+                        <span class="ranking-player-name"><%= player.in_game_name %></span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="ranking-votes">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>
+                        </svg>
+                        <%= player.last_month_valid_votes %>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="ranking-total"><%= player.votes_count || 0 %> total</span>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          <% else %>
+            <div class="ranking-empty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <p>Aucun vote enregistre pour le mois precedent.</p>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
+
+    <!-- Footer -->
+    <div class="ranking-footer">
+      <p class="ranking-footer-text">
+        Votez sur <a href="https://top-serveurs.net" target="_blank" class="ranking-footer-link">top-serveurs.net</a> pour gagner des points !
+      </p>
+    </div>
   </div>
 </div>
-
-<!-- Custom CSS for enhanced styling -->
-<style>
-  
-</style>
