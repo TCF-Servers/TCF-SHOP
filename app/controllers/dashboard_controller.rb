@@ -2,6 +2,7 @@ class DashboardController < ApplicationController
   layout "admin"
 
   def index
+    authorize :dashboard
     @online_players_count = Player.joins(:game_session).where(game_sessions: { online: true }).count
     @online_players = Player.joins(:game_session).where(game_sessions: { online: true }).limit(10)
     @today_votes_count = Vote.where(created_at: Time.current.beginning_of_day..).count

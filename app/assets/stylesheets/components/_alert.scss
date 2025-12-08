@@ -1,6 +1,113 @@
-.alert {
+@import "../config/admin_theme";
+
+.flash {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  bottom: 24px;
+  right: 24px;
   z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: 12px;
+  background: $admin-bg-card;
+  border: 1px solid $admin-border-medium;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: flash-slide-in 0.3s ease-out;
+  max-width: 400px;
+
+  &.flash-hiding {
+    animation: flash-slide-out 0.3s ease-in forwards;
+  }
+}
+
+.flash-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.flash-notice .flash-icon {
+  background: $admin-success-bg;
+  color: $admin-success;
+}
+
+.flash-alert .flash-icon {
+  background: $admin-error-bg;
+  color: $admin-error;
+}
+
+.flash-message {
+  flex: 1;
+  font-family: "Outfit", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: $admin-text-primary;
+  line-height: 1.4;
+}
+
+.flash-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: $admin-text-muted;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: $admin-bg-elevated;
+    color: $admin-text-primary;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@keyframes flash-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes flash-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+// Responsive
+@media (max-width: 480px) {
+  .flash {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: none;
+  }
 }

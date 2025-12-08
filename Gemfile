@@ -53,6 +53,7 @@ gem "sassc-rails"
 gem 'rconrb'
 gem 'discordrb'
 gem 'pg_search'
+gem 'pundit'
 
 group :development, :test do
   gem "dotenv-rails"
