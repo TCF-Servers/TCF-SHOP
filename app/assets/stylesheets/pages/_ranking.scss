@@ -1,0 +1,311 @@
+// Ranking Page Styles
+@import "../config/admin_theme";
+
+.ranking-page {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: $admin-bg-darkest;
+  color: $admin-text-primary;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.ranking-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.ranking-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.ranking-logo {
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, $admin-accent-orange 0%, $admin-accent-orange-dark 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 8px 32px $admin-accent-glow;
+
+  svg {
+    width: 44px;
+    height: 44px;
+    color: white;
+  }
+}
+
+.ranking-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: $admin-text-primary;
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
+}
+
+.ranking-subtitle {
+  font-size: 16px;
+  color: $admin-text-muted;
+}
+
+// Tabs
+.ranking-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: $admin-bg-card;
+  padding: 6px;
+  border-radius: 12px;
+  border: 1px solid $admin-border-subtle;
+}
+
+.ranking-tab {
+  flex: 1;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: $admin-text-secondary;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover {
+    color: $admin-text-primary;
+    background: $admin-bg-elevated;
+  }
+
+  &.active {
+    background: $admin-accent-orange;
+    color: white;
+  }
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+// Tab Content
+.ranking-tab-content {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+// Card
+.ranking-card {
+  background: $admin-bg-card;
+  border: 1px solid $admin-border-subtle;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.ranking-card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid $admin-border-subtle;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ranking-card-icon {
+  width: 40px;
+  height: 40px;
+  background: $admin-accent-glow;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $admin-accent-orange;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+.ranking-card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: $admin-text-primary;
+  margin: 0;
+}
+
+.ranking-card-period {
+  font-size: 14px;
+  color: $admin-text-muted;
+  margin-left: auto;
+}
+
+// Table
+.ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    text-align: left;
+    padding: 14px 24px;
+    font-size: 11px;
+    font-weight: 600;
+    color: $admin-text-muted;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    background: $admin-bg-elevated;
+  }
+
+  td {
+    padding: 16px 24px;
+    font-size: 14px;
+    color: $admin-text-secondary;
+    border-bottom: 1px solid $admin-border-subtle;
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+}
+
+// Rank badges
+.ranking-position {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.gold {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #1a1a1a;
+  }
+
+  &.silver {
+    background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+    color: white;
+  }
+
+  &.bronze {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    color: white;
+  }
+
+  &.default {
+    background: $admin-bg-elevated;
+    color: $admin-text-secondary;
+  }
+}
+
+// Player info
+.ranking-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ranking-player-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: $avatar-gradient-indigo;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+}
+
+.ranking-player-name {
+  font-weight: 600;
+  color: $admin-text-primary;
+}
+
+// Vote badges
+.ranking-votes {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: $admin-success-bg;
+  color: $admin-success;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.ranking-total {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: $admin-bg-elevated;
+  color: $admin-text-secondary;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+// Empty state
+.ranking-empty {
+  padding: 60px 24px;
+  text-align: center;
+
+  svg {
+    width: 48px;
+    height: 48px;
+    color: $admin-text-muted;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: $admin-text-muted;
+    font-size: 15px;
+    margin: 0;
+  }
+}
+
+// Footer
+.ranking-footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid $admin-border-subtle;
+}
+
+.ranking-footer-text {
+  font-size: 13px;
+  color: $admin-text-muted;
+}
+
+.ranking-footer-link {
+  color: $admin-accent-orange;
+  text-decoration: none;
+  font-weight: 500;
+
+  &:hover {
+    color: $admin-accent-orange-light;
+  }
+}
