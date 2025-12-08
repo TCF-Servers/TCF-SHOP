@@ -3,14 +3,10 @@
     <!-- Header -->
     <div class="ranking-header">
       <div class="ranking-logo">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-          <polyline points="2 17 12 22 22 17"/>
-          <polyline points="2 12 12 17 22 12"/>
-        </svg>
+        <%= image_tag "Logo_TCF.png", alt: "The Campfire" %>
       </div>
       <h1 class="ranking-title">Classement des Votes</h1>
-      <p class="ranking-subtitle">The Campfire Servers - Recompenses mensuelles</p>
+      <p class="ranking-subtitle">The Campfire - Recompenses mensuelles</p>
     </div>
 
     <!-- Tabs -->
@@ -180,7 +176,7 @@
     <!-- Footer -->
     <div class="ranking-footer">
       <p class="ranking-footer-text">
-        Votez sur <a href="https://top-serveurs.net" target="_blank" class="ranking-footer-link">top-serveurs.net</a> pour gagner des points !
+        Votez sur <%= link_to "top-serveurs.net", "https://top-serveurs.net/arksa/tcf-the-campfire", target: "_blank", class: "ranking-footer-link" %> pour gagner des points !
       </p>
     </div>
   </div>

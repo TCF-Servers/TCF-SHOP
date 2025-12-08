@@ -20,20 +20,14 @@
 }
 
 .ranking-logo {
-  width: 80px;
-  height: 80px;
-  background: linear-gradient(135deg, $admin-accent-orange 0%, $admin-accent-orange-dark 100%);
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100px;
+  height: 100px;
   margin: 0 auto 20px;
-  box-shadow: 0 8px 32px $admin-accent-glow;
 
-  svg {
-    width: 44px;
-    height: 44px;
-    color: white;
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
