@@ -45,8 +45,9 @@
           </div>
 
           <% if @current_month_ranking.any? %>
-            <table class="ranking-table">
-              <thead>
+            <div class="ranking-table-wrapper">
+              <table class="ranking-table">
+                <thead>
                 <tr>
                   <th>Rang</th>
                   <th>Joueur</th>
@@ -89,7 +90,8 @@
                   </tr>
                 <% end %>
               </tbody>
-            </table>
+              </table>
+            </div>
           <% else %>
             <div class="ranking-empty">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -116,15 +118,16 @@
           </div>
 
           <% if @last_month_ranking.any? %>
-            <table class="ranking-table">
-              <thead>
-                <tr>
-                  <th>Rang</th>
-                  <th>Joueur</th>
-                  <th>Votes</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
+            <div class="ranking-table-wrapper">
+              <table class="ranking-table">
+                <thead>
+                  <tr>
+                    <th>Rang</th>
+                    <th>Joueur</th>
+                    <th>Votes</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
               <tbody>
                 <% @last_month_ranking.each_with_index do |player, index| %>
                   <tr>
@@ -160,7 +163,8 @@
                   </tr>
                 <% end %>
               </tbody>
-            </table>
+              </table>
+            </div>
           <% else %>
             <div class="ranking-empty">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

@@ -303,3 +303,43 @@
     color: $admin-accent-orange-light;
   }
 }
+
+// Table wrapper for horizontal scroll on mobile
+.ranking-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Responsive
+@media (max-width: 640px) {
+  .ranking-page {
+    padding: 24px 12px;
+  }
+
+  .ranking-title {
+    font-size: 24px;
+  }
+
+  .ranking-tabs {
+    flex-direction: column;
+  }
+
+  .ranking-card-header {
+    padding: 16px;
+    flex-wrap: wrap;
+  }
+
+  .ranking-card-period {
+    width: 100%;
+    margin-left: 52px;
+    margin-top: 4px;
+  }
+
+  .ranking-table {
+    min-width: 500px;
+
+    th, td {
+      padding: 12px 16px;
+    }
+  }
+}
