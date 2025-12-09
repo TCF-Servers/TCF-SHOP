@@ -160,18 +160,16 @@
   <div class="admin-players-grid">
     <% @online_players.each do |player| %>
       <div class="admin-player-card">
-        <div class="admin-player-avatar"><%= player.in_game_name.first.upcase %></div>
+        <div class="admin-player-avatar online"><%= player.in_game_name.first.upcase %></div>
         <div class="admin-player-info">
           <span class="admin-player-name"><%= player.in_game_name %></span>
-          <span class="admin-player-map"><%= player.current_map %></span>
-        </div>
-        <div class="admin-player-actions">
-          <%= link_to "#", class: "admin-player-action", title: "Executer commande" do %>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="4 17 10 11 4 5"/>
-              <line x1="12" y1="19" x2="20" y2="19"/>
-            </svg>
-          <% end %>
+          <div class="admin-player-meta">
+            <span class="admin-player-map">
+              <span class="admin-player-map-dot <%= player.game_session&.map_css_class %>"></span>
+              <%= player.game_session&.formatted_map_name || "Inconnu" %>
+            </span>
+            <span class="admin-player-time">• <%= player.game_session&.online_duration || "0min" %></span>
+          </div>
         </div>
       </div>
     <% end %>
