@@ -1,6 +1,6 @@
 <% content_for(:page_title) { "Templates RCON" } %>
 
-<div class="admin-section">
+<div class="admin-section" data-controller="modal" data-modal-new-url-value="<%= new_admin_rcon_command_template_path %>" data-modal-edit-url-value="<%= edit_admin_rcon_command_template_path(id: ':id') %>">
   <div class="admin-section-header">
     <h2 class="admin-section-title">
       <span class="admin-section-title-icon">
@@ -14,14 +14,14 @@
       </span>
       Templates de commandes
     </h2>
-    
-    <%= link_to new_admin_rcon_command_template_path, class: "admin-btn admin-btn-primary", data: { bs_toggle: "modal", bs_target: "#RconModal", turbo_frame: "rcon_modal_content" } do %>
+
+    <button type="button" class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#RconModal" data-action="click->modal#loadNew">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
         <line x1="12" y1="5" x2="12" y2="19"/>
         <line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
       Nouveau template
-    <% end %>
+    </button>
 
     <%= render "rcon_modal" %>
   </div>

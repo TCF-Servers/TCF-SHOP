@@ -1,3 +1,7 @@
 <%= turbo_frame_tag "rcon_modal_content" do %>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="RconModalLabel">Modifier le template</h1>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
   <%= render "form", template: @template %>
 <% end %>
