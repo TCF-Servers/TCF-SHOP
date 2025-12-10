@@ -1,0 +1,53 @@
+<%= form_with model: [:admin, template], class: "admin-form" do |f| %>
+  <div class="modal-body">
+    <% if template.errors.any? %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% template.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <%= f.label :name, "Nom", class: "form-label" %>
+      <%= f.text_field :name, class: "form-control", placeholder: "Ex: AddPoints" %>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :command_template, "Commande", class: "form-label" %>
+      <%= f.text_field :command_template, class: "form-control font-monospace", placeholder: "Ex: AddPoints {eos_id} {amount}" %>
+      <div class="form-text">Utilisez {placeholder} pour les variables dynamiques</div>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :description, "Description", class: "form-label" %>
+      <%= f.text_area :description, class: "form-control", rows: 2, placeholder: "Description de la commande..." %>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= f.label :required_role, "Role requis", class: "form-label" %>
+        <%= f.select :required_role, RconCommandTemplate.required_roles.keys.map { |r| [r.humanize, r] }, {}, class: "form-select" %>
+      </div>
+
+      <div class="col-md-6 mb-3 d-flex align-items-end">
+        <div class="form-check">
+          <%= f.check_box :requires_player, class: "form-check-input", id: "requires_player" %>
+          <%= f.label :requires_player, "Requiert un joueur", class: "form-check-label", for: "requires_player" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-check mb-3">
+      <%= f.check_box :enabled, class: "form-check-input", id: "enabled" %>
+      <%= f.label :enabled, "Actif", class: "form-check-label", for: "enabled" %>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+    <%= f.submit template.persisted? ? "Mettre a jour" : "Creer le template", class: "btn btn-primary" %>
+  </div>
+<% end %>

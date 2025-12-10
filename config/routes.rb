@@ -15,4 +15,8 @@ Rails.application.routes.draw do
 
   get :ranking, to: 'pages#ranking'
   get :dashboard, to: 'dashboard#index'
+
+  namespace :admin do
+    resources :rcon_command_templates
+  end
 end

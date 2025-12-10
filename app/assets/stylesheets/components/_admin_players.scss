@@ -65,6 +65,7 @@
 }
 
 .admin-player-name {
+  display: block;
   font-size: 14px;
   font-weight: 600;
   color: $admin-text-primary;
@@ -85,9 +86,27 @@
 .admin-player-map {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+}
+
+.admin-player-map-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  &.island { background: $map-island; }
+  &.scorched { background: $map-scorched; }
+  &.aberration { background: $map-aberration; }
+  &.extinction { background: $map-extinction; }
+  &.genesis { background: $map-genesis; }
+  &.ragnarok { background: $map-ragnarok; }
+  &.valguero { background: $map-valguero; }
+  &.center { background: $map-center; }
+  &.lost-colony { background: $map-lost-colony; }
+  &.astraeos { background: $admin-accent-orange; }
 }
 
 .admin-player-time {
-  opacity: 0.7;
+  color: $admin-text-muted;
 }

@@ -54,6 +54,7 @@ gem 'rconrb'
 gem 'discordrb'
 gem 'pg_search'
 gem 'pundit'
+gem "solid_cable"
 
 group :development, :test do
   gem "dotenv-rails"

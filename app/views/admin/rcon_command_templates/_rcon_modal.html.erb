@@ -1,0 +1,14 @@
+<div class="modal fade" id="RconModal" tabindex="-1" aria-labelledby="RconModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content admin-modal">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="RconModalLabel"><%= @template.persisted? ? "Modifier le template" : "Nouveau template RCON" %></h1>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <%= turbo_frame_tag "rcon_modal_content" do  %>
+        <%= render "form", template: @template %>
+      <% end %>
+
+    </div>
+  </div>
+</div>
