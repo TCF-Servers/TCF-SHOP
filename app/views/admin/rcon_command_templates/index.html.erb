@@ -14,13 +14,14 @@
       </span>
       Templates de commandes
     </h2>
-    <button type="button" class="admin-btn admin-btn-primary" data-bs-toggle="modal" data-bs-target="#RconModal">
+    
+    <%= link_to new_admin_rcon_command_template_path, class: "admin-btn admin-btn-primary", data: { bs_toggle: "modal", bs_target: "#RconModal", turbo_frame: "rcon_modal_content" } do %>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
         <line x1="12" y1="5" x2="12" y2="19"/>
         <line x1="5" y1="12" x2="19" y2="12"/>
       </svg>
       Nouveau template
-    </button>
+    <% end %>
 
     <%= render "rcon_modal" %>
   </div>
@@ -40,22 +41,6 @@
         </svg>
         <p>Aucun template de commande RCON</p>
         <span>Cliquez sur "Nouveau template" pour en creer un</span>
-      </div>
-    <% end %>
-  </div>
-</div>
-
-<!-- Modal Template -->
-<div class="modal fade" id="templateModal" tabindex="-1" aria-hidden="true">
-  <button type="button" class="d-none" data-bs-dismiss="modal" aria-label="Close"></button>
-  <div class="modal-dialog modal-dialog-centered">
-    <%= turbo_frame_tag "template_modal_content" do %>
-      <div class="modal-content admin-modal">
-        <div class="modal-body text-center py-5">
-          <div class="spinner-border text-secondary" role="status">
-            <span class="visually-hidden">Chargement...</span>
-          </div>
-        </div>
       </div>
     <% end %>
   </div>

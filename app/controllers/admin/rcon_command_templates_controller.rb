@@ -20,6 +20,21 @@ class Admin::RconCommandTemplatesController < Admin::BaseController
     end
   end
 
+  def edit
+    @template = RconCommandTemplate.find(params[:id])
+    authorize @template
+  end
+
+  def update
+    @template = RconCommandTemplate.find(params[:id])
+    authorize @template
+    if @template.update(template_params)
+      redirect_to admin_rcon_command_templates_path, notice: "Template mis à jour"
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   def destroy
     @template = RconCommandTemplate.find(params[:id])
     authorize @template

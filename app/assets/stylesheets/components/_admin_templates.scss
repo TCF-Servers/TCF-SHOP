@@ -260,6 +260,7 @@
 .admin-modal {
   background: $admin-bg-card;
   border: 1px solid $admin-border-subtle;
+  border-radius: 12px;
   color: $admin-text-primary;
 
   .modal-header {
@@ -344,6 +345,7 @@
   .btn-secondary {
     background: $admin-bg-elevated;
     border: 1px solid $admin-border-medium;
+    border-radius: 8px;
     color: $admin-text-secondary;
 
     &:hover {
@@ -356,6 +358,7 @@
   .btn-primary {
     background: linear-gradient(135deg, $admin-accent-orange 0%, $admin-accent-orange-dark 100%);
     border: none;
+    border-radius: 8px;
     color: white;
 
     &:hover {
