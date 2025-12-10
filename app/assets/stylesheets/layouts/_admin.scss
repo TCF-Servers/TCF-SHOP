@@ -48,22 +48,6 @@
 .admin-logo-icon {
   width: 44px;
   height: 44px;
-  background: linear-gradient(135deg, $admin-accent-orange 0%, $admin-accent-orange-dark 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px $admin-accent-glow, 0 0 40px $admin-accent-glow;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, transparent 50%);
-    border-radius: inherit;
-  }
 
   svg {
     width: 26px;
