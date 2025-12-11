@@ -46,7 +46,10 @@ class Admin::RconCommandTemplatesController < Admin::BaseController
     @template = RconCommandTemplate.find(params[:id])
     authorize @template
     @template.destroy
-    redirect_to admin_rcon_command_templates_path, notice: "Template supprimé"
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to admin_rcon_command_templates_path, notice: "Template supprimé" }
+    end
   end
 
   private

@@ -1,0 +1,65 @@
+// SweetAlert2 Admin Theme
+// Matches The Campfire dark theme
+
+.swal-admin-popup {
+  border: 1px solid $admin-border-medium;
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+.swal-admin-title {
+  font-weight: 600;
+  font-size: 1.25rem;
+}
+
+.swal-admin-text {
+  color: $admin-text-secondary;
+  font-size: 0.9rem;
+}
+
+.swal-admin-actions {
+  gap: 0.75rem;
+}
+
+.swal-admin-confirm {
+  background: $admin-error;
+  color: white;
+  border: none;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: darken($admin-error, 8%);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($admin-error, 0.3);
+  }
+}
+
+.swal-admin-cancel {
+  background: $admin-bg-elevated;
+  color: $admin-text-secondary;
+  border: 1px solid $admin-border-medium;
+  padding: 0.625rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $admin-bg-dark;
+    color: $admin-text-primary;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba($admin-border-medium, 0.5);
+  }
+}
