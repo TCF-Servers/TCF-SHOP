@@ -5,7 +5,7 @@ class DashboardController < ApplicationController
   def index
     authorize :dashboard
     @online_players_count = Player.joins(:game_session).where(game_sessions: { online: true }).count
-    @online_players = Player.joins(:game_session).where(game_sessions: { online: true }).limit(10)
+    @online_players = Player.includes(:game_session).joins(:game_session).where(game_sessions: { online: true }).limit(10)
     @today_votes_count = Vote.where(created_at: Time.current.beginning_of_day..).count
     @today_commands_count = RconExecution.where(created_at: Time.current.beginning_of_day..).count
     @total_players_count = Player.count

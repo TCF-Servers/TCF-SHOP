@@ -14,7 +14,11 @@ class Admin::RconCommandTemplatesController < Admin::BaseController
     authorize @template
 
     if @template.save
-      redirect_to admin_rcon_command_templates_path, notice: "Template créé avec succès"
+      @templates = policy_scope(RconCommandTemplate).order(:name)
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to admin_rcon_command_templates_path, notice: "Template créé avec succès" }
+      end
     else
       render :new, status: :unprocessable_entity
     end
@@ -29,7 +33,10 @@ class Admin::RconCommandTemplatesController < Admin::BaseController
     @template = RconCommandTemplate.find(params[:id])
     authorize @template
     if @template.update(template_params)
-      redirect_to admin_rcon_command_templates_path, notice: "Template mis à jour"
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to admin_rcon_command_templates_path, notice: "Template mis à jour" }
+      end
     else
       render :edit, status: :unprocessable_entity
     end
