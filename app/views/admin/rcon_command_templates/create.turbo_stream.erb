@@ -1,0 +1,5 @@
+<%= turbo_stream.update "templates_grid" do %>
+  <% @templates.each do |template| %>
+    <%= render "template_card", template: template %>
+  <% end %>
+<% end %>
