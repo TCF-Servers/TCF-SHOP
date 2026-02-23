@@ -40,12 +40,11 @@ class Player < ApplicationRecord
   # Méthode pour vérifier si le joueur peut voter
   # Ne compte que les votes valides et ajoute une marge de 5 minutes
   def can_vote?(hours = 2, max_votes = 3)
-    recent = valid_votes.recent(hours).order(created_at: :asc)
-    return true if recent.count < max_votes
+    recent = valid_votes.recent(hours).order(created_at: :asc).load
+    return true if recent.size < max_votes
 
     # Si on a 3 votes valides, vérifier que le plus ancien a plus de 2h + 5min
-    oldest_vote = recent.first
-    oldest_vote.created_at < (hours.hours + 5.minutes).ago
+    recent.first.created_at < (hours.hours + 5.minutes).ago
   end
   
   # Méthode pour obtenir le nombre de votes valides récents
@@ -54,16 +53,16 @@ class Player < ApplicationRecord
   end
 
   def update_votes_count!
-    self.votes_count += 1
-    self.save
+    increment!(:votes_count)
   end
 
   def current_month_valid_votes
-    valid_votes.where(created_at: (Time.current.beginning_of_month - 2.hours)..(Time.current.end_of_month - 2.hours)).count
+    valid_votes.where(created_at: Time.current.all_month).count
   end
 
   def last_month_valid_votes
-    valid_votes.where(created_at: (Time.current.last_month.beginning_of_month - 2.hours)..(Time.current.last_month.end_of_month - 2.hours)).count
+    last_month = Time.current.last_month
+    valid_votes.where(created_at: last_month.all_month).count
   end
   
   # Méthode de classe pour rechercher un joueur de manière flexible

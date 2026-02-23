@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_12_09_110533) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_23_081135) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
@@ -35,6 +35,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_110533) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "votes_count"
+    t.index ["eos_id"], name: "index_players_on_eos_id", unique: true
   end
 
   create_table "rcon_command_templates", force: :cascade do |t|
@@ -100,6 +101,7 @@ ActiveRecord::Schema[7.1].define(version: 2025_12_09_110533) do
     t.boolean "vote_valid"
     t.index ["player_id", "created_at"], name: "index_votes_on_player_id_and_created_at"
     t.index ["player_id"], name: "index_votes_on_player_id"
+    t.index ["vote_valid"], name: "index_votes_on_vote_valid"
   end
 
   add_foreign_key "game_sessions", "players"
