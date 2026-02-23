@@ -24,7 +24,7 @@ class Vote < ApplicationRecord
 
 
   def self.current_month_votes_count
-    where('created_at >= ?', Time.current.beginning_of_month - 2.hours).count
+    where(created_at: Time.current.all_month).count
   end
 
   def self.current_month_points

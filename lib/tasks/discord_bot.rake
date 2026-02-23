@@ -106,7 +106,7 @@ namespace :discord do
                   puts "Session de jeu créée pour #{in_game_name} sur #{map_name}"
 
                   # Traiter les votes non processed lors de la connexion
-                  unprocessed_votes = player.votes.unprocessed.where(vote_valid: true)
+                  unprocessed_votes = player.valid_votes.unprocessed
                   if unprocessed_votes.any?
                     puts "Traitement des votes non processed pour #{player.in_game_name} lors de la connexion (#{unprocessed_votes.count} votes)"
                     process_votes_batch(unprocessed_votes, player)
@@ -151,7 +151,9 @@ namespace :discord do
                     puts "Joueur trouvé: #{player.in_game_name} (correspondance avec '#{player_name}')"
 
                     # Vérifier si le joueur peut encore voter (avec marge de 5 minutes)
-                    if player.can_vote?(VOTE_PERIOD_HOURS, MAX_VOTES_PER_PERIOD)
+                    if UNAUTHORIZED_IN_GAME_NAME.include?(player.in_game_name.downcase)
+                      puts "Vote ignoré pour #{player.in_game_name} (nom non autorisé)"
+                    elsif player.can_vote?(VOTE_PERIOD_HOURS, MAX_VOTES_PER_PERIOD)
                       # Créer un nouveau vote
                       vote = player.votes.create!(
                         source: "topserveur",
@@ -161,13 +163,7 @@ namespace :discord do
                       )
 
                       puts "Vote enregistré pour #{player.in_game_name} (#{player.recent_votes_count(VOTE_PERIOD_HOURS)}/#{MAX_VOTES_PER_PERIOD} votes valides dans les dernières #{VOTE_PERIOD_HOURS} heures)"
-
-                      if UNAUTHORIZED_IN_GAME_NAME.include?(player.in_game_name)
-                        puts "Vote non traité pour #{player.in_game_name} (nom non autorisé)"
-                        vote.destroy
-                      else
-                        process_votes_batch([vote], player)
-                      end
+                      process_votes_batch([vote], player)
                     else
                       puts "Limite de votes atteinte pour #{player.in_game_name} (#{player.recent_votes_count(VOTE_PERIOD_HOURS)}/#{MAX_VOTES_PER_PERIOD} votes valides dans les dernières #{VOTE_PERIOD_HOURS} heures). Création d'un vote non valide."
                       vote = player.votes.create!(
