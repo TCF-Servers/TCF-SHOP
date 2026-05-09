@@ -1,0 +1,9 @@
+<%= turbo_frame_tag "player_modal_content" do %>
+  <div class="modal-header">
+    <h1 class="modal-title fs-5" id="PlayerModalLabel">
+      Modifier <%= @player.in_game_name %>
+    </h1>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>
+  <%= render "form", player: @player %>
+<% end %>

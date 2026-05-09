@@ -1,0 +1,76 @@
+<% content_for(:page_title) { "Joueurs" } %>
+
+<div class="admin-section"
+     data-controller="player-modal"
+     data-player-modal-edit-url-value="<%= edit_admin_player_path(id: ':id') %>">
+  <div class="admin-section-header">
+    <h2 class="admin-section-title">
+      <span class="admin-section-title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+      </span>
+      Joueurs (<%= @players.size %>)
+    </h2>
+
+    <%= form_with url: admin_players_path,
+                  method: :get,
+                  data: {
+                    controller: "search-form",
+                    action: "input->search-form#submit",
+                    turbo_frame: "players_table"
+                  },
+                  class: "admin-search-form" do |f| %>
+      <div class="admin-search-input-wrapper">
+        <svg class="admin-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <%= f.search_field :q,
+                           value: @query,
+                           placeholder: "Pseudo, tribu ou EOS ID…",
+                           autocomplete: "off",
+                           class: "admin-search-input" %>
+      </div>
+    <% end %>
+
+    <%= render "player_modal" %>
+  </div>
+
+  <%= turbo_frame_tag "players_table" do %>
+    <div class="admin-table-container">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Pseudo</th>
+            <th>Plateforme</th>
+            <th>Tribu</th>
+            <th>Discord</th>
+            <th>Statut</th>
+            <th>Votes</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="players_table_body">
+          <% @players.each do |player| %>
+            <%= render "player_row", player: player %>
+          <% end %>
+          <% if @players.empty? %>
+            <tr id="players_empty">
+              <td colspan="7" class="admin-table-empty">
+                <% if @query.present? %>
+                  Aucun joueur trouvé pour « <%= @query %> »
+                <% else %>
+                  Aucun joueur enregistré
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>The Campfire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="auth-layout">
+    <%= render "shared/flashes" %>
+
+    <main class="auth-shell">
+      <div class="auth-card">
+        <div class="auth-brand">
+          <div class="auth-logo">
+            <%= image_tag "Logo_TCF.png", alt: "The Campfire Logo" %>
+          </div>
+          <h1 class="auth-brand-title">The Campfire</h1>
+          <p class="auth-brand-subtitle">Espace membres</p>
+        </div>
+
+        <%= yield %>
+      </div>
+    </main>
+  </body>
+</html>

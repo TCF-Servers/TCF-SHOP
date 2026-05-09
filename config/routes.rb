@@ -13,9 +13,13 @@ Rails.application.routes.draw do
   # Route pour le healthcheck (pour UptimeRobot)
   get '/healthcheck', to: 'application#healthcheck'
 
+  # Liste des EOS IDs des administrateurs (consommée par le serveur de jeu)
+  get '/admins.txt', to: 'admins#index'
+
   get :ranking, to: 'pages#ranking'
   namespace :admin do
     get :dashboard, to: 'dashboard#index'
     resources :rcon_command_templates
+    resources :players, only: [:index, :edit, :update, :destroy]
   end
 end

@@ -9,7 +9,61 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-search-form {
+  flex: 1;
+  max-width: 360px;
+  margin: 0;
+}
+
+.admin-search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.admin-search-icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: $admin-text-muted;
+  pointer-events: none;
+}
+
+.admin-search-input {
+  width: 100%;
+  background: $admin-bg-elevated;
+  border: 1px solid $admin-border-medium;
+  color: $admin-text-primary;
+  border-radius: 10px;
+  padding: 9px 14px 9px 36px;
+  font-size: 13px;
+  font-family: "Outfit", sans-serif;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: $admin-text-muted;
+  }
+
+  &:focus {
+    border-color: $admin-accent-orange;
+    box-shadow: 0 0 0 3px $admin-accent-glow;
+    outline: none;
+  }
+
+  &::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23737373' stroke-width='2'><line x1='18' y1='6' x2='6' y2='18'/><line x1='6' y1='6' x2='18' y2='18'/></svg>");
+    cursor: pointer;
+  }
 }
 
 .admin-section-title {
@@ -65,7 +119,7 @@
   border: 1px solid $admin-border-subtle;
   border-radius: 16px;
   overflow: hidden;
-  max-height: 350px;
+  max-height: calc(100vh - 220px);
   overflow-y: auto;
 
   @media (max-width: 768px) {

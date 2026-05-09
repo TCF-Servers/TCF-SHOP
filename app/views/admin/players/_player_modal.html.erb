@@ -1,0 +1,15 @@
+<div class="modal fade" id="PlayerModal" tabindex="-1" aria-labelledby="PlayerModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content admin-modal">
+      <%= turbo_frame_tag "player_modal_content" do %>
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="PlayerModalLabel">Modifier le joueur</h1>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center text-muted">
+          <em>Sélectionnez un joueur à modifier.</em>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

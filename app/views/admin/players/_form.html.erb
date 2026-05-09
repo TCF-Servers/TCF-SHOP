@@ -1,0 +1,62 @@
+<%= form_with model: [:admin, player], class: "admin-form" do |f| %>
+  <div class="modal-body">
+    <% if player.errors.any? %>
+      <div class="alert alert-danger">
+        <ul class="mb-0">
+          <% player.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= f.label :in_game_name, "Pseudo en jeu", class: "form-label" %>
+        <%= f.text_field :in_game_name, class: "form-control" %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= f.label :platform_name, "Plateforme", class: "form-label" %>
+        <%= f.text_field :platform_name, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :eos_id, "EOS ID", class: "form-label" %>
+      <%= f.text_field :eos_id, class: "form-control font-monospace" %>
+      <div class="form-text">Identifiant unique du joueur — modifier avec précaution.</div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= f.label :tribe_id, "Tribu (ID)", class: "form-label" %>
+        <%= f.text_field :tribe_id, class: "form-control" %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= f.label :tribe_name, "Tribu (nom)", class: "form-label" %>
+        <%= f.text_field :tribe_name, class: "form-control" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <%= f.label :discord_name, "Discord (nom)", class: "form-label" %>
+        <%= f.text_field :discord_name, class: "form-control" %>
+      </div>
+      <div class="col-md-6 mb-3">
+        <%= f.label :discord_id, "Discord (ID)", class: "form-label" %>
+        <%= f.text_field :discord_id, class: "form-control font-monospace" %>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <%= f.label :votes_count, "Compteur de votes", class: "form-label" %>
+      <%= f.number_field :votes_count, class: "form-control", min: 0 %>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+    <%= f.submit "Mettre à jour", class: "btn btn-primary" %>
+  </div>
+<% end %>
