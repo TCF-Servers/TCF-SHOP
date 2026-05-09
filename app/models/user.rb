@@ -25,6 +25,7 @@ class User < ApplicationRecord
   def link_player_from_in_game_name
     return if in_game_name.blank? || player.present?
 
-    self.player = Player.find_by_flexible_name(in_game_name.strip)
+    candidate = Player.find_by_flexible_name(in_game_name.strip)
+    self.player = candidate if candidate && candidate.user.nil?
   end
 end

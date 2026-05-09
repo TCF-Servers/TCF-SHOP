@@ -3,6 +3,7 @@ module Admin
     before_action :set_player, only: [:edit, :update, :destroy]
 
     def index
+      authorize Player, :index?
       @query = params[:q].to_s.strip
       scope = policy_scope(Player).includes(:game_session)
 
