@@ -3,6 +3,10 @@ class ApplicationController < ActionController::Base
   skip_before_action :authenticate_user!, only: [:healthcheck]
   include Pundit::Authorization
 
+  layout :resolve_layout
+
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
   after_action :verify_authorized, except: [:index, :healthcheck], unless: :skip_pundit?
   after_action :verify_policy_scoped, only: :index, unless: :skip_pundit?
   
@@ -26,5 +30,13 @@ class ApplicationController < ActionController::Base
 
   def skip_pundit?
     devise_controller? || params[:controller] =~ /(^rails_admin)|(^pages$)/
+  end
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:in_game_name])
+  end
+
+  def resolve_layout
+    devise_controller? ? "auth" : "application"
   end
 end

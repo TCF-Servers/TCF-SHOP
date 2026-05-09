@@ -1,0 +1,305 @@
+// Auth screens (sign in / sign up / reset password)
+@import "../config/admin_theme";
+
+.auth-layout {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Outfit", -apple-system, BlinkMacSystemFont, sans-serif;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(249, 115, 22, 0.08), transparent 45%),
+    radial-gradient(circle at 80% 100%, rgba(99, 102, 241, 0.06), transparent 50%),
+    $admin-bg-darkest;
+  color: $admin-text-primary;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 16px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: $admin-bg-card;
+  border: 1px solid $admin-border-subtle;
+  border-radius: 20px;
+  padding: 40px 36px 32px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+// Brand block
+.auth-brand {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.auth-logo {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 16px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.auth-brand-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: $admin-text-primary;
+}
+
+.auth-brand-subtitle {
+  font-size: 13px;
+  color: $admin-text-muted;
+  margin: 4px 0 0;
+}
+
+// Form heading
+.auth-heading {
+  margin-bottom: 24px;
+  text-align: center;
+
+  h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: $admin-text-primary;
+    margin: 0 0 6px;
+  }
+
+  p {
+    font-size: 13px;
+    color: $admin-text-secondary;
+    margin: 0;
+    line-height: 1.5;
+  }
+}
+
+// Form
+.auth-form {
+  .form-label {
+    color: $admin-text-secondary;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    background: $admin-bg-elevated;
+    border: 1px solid $admin-border-medium;
+    color: $admin-text-primary;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+
+    &::placeholder {
+      color: $admin-text-muted;
+    }
+
+    &:focus {
+      background: $admin-bg-elevated;
+      border-color: $admin-accent-orange;
+      box-shadow: 0 0 0 3px $admin-accent-glow;
+      color: $admin-text-primary;
+      outline: none;
+    }
+
+    &.is-invalid {
+      border-color: $admin-error;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+      }
+    }
+  }
+
+  .form-text {
+    color: $admin-text-muted;
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .invalid-feedback {
+    color: $admin-error;
+    font-size: 12px;
+  }
+
+  .form-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -4px 0 4px;
+  }
+
+  .form-check-input {
+    background-color: $admin-bg-elevated;
+    border-color: $admin-border-medium;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+
+    &:checked {
+      background-color: $admin-accent-orange;
+      border-color: $admin-accent-orange;
+    }
+
+    &:focus {
+      border-color: $admin-accent-orange;
+      box-shadow: 0 0 0 3px $admin-accent-glow;
+    }
+  }
+
+  .form-check-label {
+    color: $admin-text-secondary;
+    font-size: 13px;
+    margin: 0;
+  }
+
+  .alert-danger {
+    background: $admin-error-bg;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 16px;
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+  }
+}
+
+// Actions
+.auth-actions {
+  margin-top: 8px;
+}
+
+.auth-btn-primary {
+  width: 100%;
+  background: linear-gradient(135deg, $admin-accent-orange 0%, $admin-accent-orange-dark 100%);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.01em;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+// Bottom links
+.auth-links {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid $admin-border-subtle;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+}
+
+.auth-link {
+  font-size: 13px;
+  font-weight: 500;
+  color: $admin-accent-orange-light;
+  text-decoration: none;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: $admin-accent-orange;
+    text-decoration: underline;
+  }
+}
+
+.auth-link-muted {
+  color: $admin-text-muted;
+  font-weight: 400;
+
+  &:hover {
+    color: $admin-text-secondary;
+  }
+}
+
+// Reconfirmation banner (registrations#edit)
+.auth-pending-confirmation {
+  background: rgba(234, 179, 8, 0.12);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+  color: #fde68a;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+// Danger zone (account deletion)
+.auth-danger-zone {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid $admin-border-subtle;
+
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: $admin-text-primary;
+    margin: 0 0 4px;
+  }
+
+  p {
+    font-size: 13px;
+    color: $admin-text-muted;
+    margin: 0 0 12px;
+  }
+}
+
+.auth-btn-danger {
+  width: 100%;
+  background: transparent;
+  color: #fca5a5;
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: $admin-error-bg;
+    border-color: $admin-error;
+    color: #fff;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 32px 22px 28px;
+    border-radius: 16px;
+  }
+}

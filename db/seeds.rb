@@ -31,6 +31,7 @@ PLAYER_NAMES = %w[
   NightStalker
   SoulReaper
   DoomSlayer
+  Wulfens
 ]
 
 puts "Suppression des anciennes données..."

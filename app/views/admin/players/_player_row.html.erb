@@ -1,0 +1,47 @@
+<tr id="<%= dom_id(player) %>">
+  <td>
+    <div class="admin-table-admin">
+      <div class="admin-table-admin-avatar"><%= player.in_game_name.to_s.first&.upcase || "?" %></div>
+      <span><%= player.in_game_name %></span>
+    </div>
+  </td>
+  <td><%= player.platform_name.presence || "-" %></td>
+  <td><%= player.tribe_name.presence || "-" %></td>
+  <td><%= player.discord_name.presence || "-" %></td>
+  <td>
+    <% if player.online? %>
+      <span class="admin-status-badge success">
+        <span class="admin-table-map-dot"></span>
+        En ligne
+        <% if player.current_map %>
+          • <%= player.game_session.formatted_map_name %>
+        <% end %>
+      </span>
+    <% else %>
+      <span class="admin-status-badge">Hors ligne</span>
+    <% end %>
+  </td>
+  <td><%= player.votes_count || 0 %></td>
+  <td class="text-end">
+    <button type="button" class="admin-btn-icon" title="Modifier"
+            data-bs-toggle="modal" data-bs-target="#PlayerModal"
+            data-action="click->player-modal#loadEdit"
+            data-player-id="<%= player.id %>">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      </svg>
+    </button>
+    <button type="button" class="admin-btn-icon danger" title="Supprimer"
+            data-controller="swal-confirm"
+            data-action="click->swal-confirm#confirm"
+            data-swal-confirm-url-value="<%= admin_player_path(player) %>"
+            data-swal-confirm-title-value="Supprimer ce joueur ?"
+            data-swal-confirm-text-value="Cette action est irréversible et supprimera également ses votes et sa session.">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+    </button>
+  </td>
+</tr>

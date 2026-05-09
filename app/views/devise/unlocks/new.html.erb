@@ -1,18 +1,20 @@
-<h2>Resend unlock instructions</h2>
+<div class="auth-heading">
+  <h2>Déverrouiller le compte</h2>
+  <p>Entrez votre email pour recevoir à nouveau les instructions de déverrouillage.</p>
+</div>
 
-<%= simple_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post }) do |f| %>
+<%= simple_form_for(resource, as: resource_name, url: unlock_path(resource_name), html: { method: :post, class: "auth-form" }) do |f| %>
   <%= f.error_notification %>
   <%= f.full_error :unlock_token %>
 
-  <div class="form-inputs">
-    <%= f.input :email,
-                required: true,
-                autofocus: true,
-                input_html: { autocomplete: "email" } %>
-  </div>
+  <%= f.input :email,
+              label: "Email",
+              required: true,
+              autofocus: true,
+              input_html: { autocomplete: "email" } %>
 
-  <div class="form-actions">
-    <%= f.button :submit, "Resend unlock instructions" %>
+  <div class="auth-actions">
+    <%= f.button :submit, "Renvoyer les instructions", class: "btn auth-btn-primary" %>
   </div>
 <% end %>
 

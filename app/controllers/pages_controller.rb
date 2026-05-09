@@ -6,19 +6,16 @@ class PagesController < ApplicationController
   end
 
   def ranking
-    # Current month ranking
     @current_month_ranking = Player.joins(:valid_votes)
-                                  .where(votes: { created_at: Time.current.all_month })
-                                  .group("players.id")
-                                  .order("COUNT(votes.id) DESC")
-                                  .limit(50)
-
-    # Last month ranking
+                                   .where(votes: { created_at: Time.current.all_month })
+                                   .group("players.id")
+                                   .order("COUNT(votes.id) DESC")
+                                   .limit(50)
     last_month = Time.current.last_month
     @last_month_ranking = Player.joins(:valid_votes)
-                               .where(votes: { created_at: last_month.all_month })
-                               .group("players.id")
-                               .order("COUNT(votes.id) DESC")
-                               .limit(50)
+                                .where(votes: { created_at: last_month.all_month })
+                                .group("players.id")
+                                .order("COUNT(votes.id) DESC")
+                                .limit(50)
   end
 end

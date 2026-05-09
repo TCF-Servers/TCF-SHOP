@@ -1,8 +1,11 @@
 class Player < ApplicationRecord
   has_one :game_session, dependent: :destroy
+  has_one :user, dependent: :nullify
   has_many :votes, dependent: :destroy
   has_many :valid_votes, -> { where(vote_valid: true) }, class_name: 'Vote'
   has_many :rcon_executions, dependent: :nullify
+
+  validates :eos_id, uniqueness: true, allow_blank: true
   
   # Configuration de pg_search
   include PgSearch::Model
@@ -11,6 +14,13 @@ class Player < ApplicationRecord
                   using: {
                     tsearch: { prefix: true, any_word: true },
                     trigram: { threshold: 0.3 }
+                  }
+
+  pg_search_scope :search_by_query,
+                  against: { in_game_name: 'A', tribe_name: 'B', eos_id: 'C' },
+                  using: {
+                    tsearch: { prefix: true, any_word: true },
+                    trigram: { threshold: 0.2 }
                   }
   
   # Méthodes pour la gestion des sessions
