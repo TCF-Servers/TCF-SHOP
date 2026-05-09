@@ -14,9 +14,8 @@ Rails.application.routes.draw do
   get '/healthcheck', to: 'application#healthcheck'
 
   get :ranking, to: 'pages#ranking'
-  get :dashboard, to: 'dashboard#index'
-
   namespace :admin do
+    get :dashboard, to: 'dashboard#index'
     resources :rcon_command_templates
   end
 end
