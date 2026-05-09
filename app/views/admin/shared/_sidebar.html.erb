@@ -1,6 +1,6 @@
 <aside class="admin-sidebar" data-admin-sidebar-target="sidebar">
   <div class="admin-logo-container">
-    <%= link_to dashboard_path, class: "admin-logo" do %>
+    <%= link_to admin_dashboard_path, class: "admin-logo" do %>
       <div class="admin-logo-icon">
         <%= image_tag "Logo_TCF.png", alt: "The Campfire Logo", height: 45, width: 45 %>
       </div>
@@ -14,7 +14,7 @@
   <nav class="admin-nav">
     <div class="admin-nav-section">
       <div class="admin-nav-section-title">Principal</div>
-      <%= link_to dashboard_path, class: "admin-nav-item #{'active' if current_page?(dashboard_path)}" do %>
+      <%= link_to admin_dashboard_path, class: "admin-nav-item #{'active' if current_page?(admin_dashboard_path)}" do %>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="3" width="7" height="7" rx="1"/>
           <rect x="14" y="3" width="7" height="7" rx="1"/>
