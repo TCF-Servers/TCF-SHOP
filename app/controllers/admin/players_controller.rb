@@ -5,12 +5,13 @@ module Admin
     def index
       authorize Player, :index?
       @query = params[:q].to_s.strip
-      scope = policy_scope(Player).includes(:game_session)
+      scope = policy_scope(Player)
 
       @players = if @query.present?
-        scope.search_by_query(@query)
+        scope.includes(:game_session).search_by_query(@query)
       else
-        scope.order(in_game_name: :asc)
+        scope.eager_load(:game_session)
+             .order(Arel.sql("(game_sessions.online IS TRUE) DESC"), in_game_name: :asc)
       end
     end
 
