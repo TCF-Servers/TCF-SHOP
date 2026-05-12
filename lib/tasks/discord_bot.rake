@@ -53,7 +53,7 @@ namespace :discord do
         end
 
         # Ajouter un gestionnaire pour les déconnexions
-        bot.disconnected do |event|
+        bot.disconnected do
           puts "Bot déconnecté à #{Time.current} - Tentative de reconnexion..."
           sleep 5
           # La boucle principale va gérer la reconnexion

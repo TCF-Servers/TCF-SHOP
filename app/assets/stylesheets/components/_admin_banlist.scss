@@ -1,0 +1,168 @@
+// Admin Banlist Styles
+@import "../config/admin_theme";
+
+.admin-banlist-form {
+    background: $admin-bg-card;
+    border: 1px solid $admin-border-subtle;
+    border-radius: 16px;
+    padding: 20px 24px 22px;
+}
+
+.admin-banlist-form-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.admin-banlist-form-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: $admin-error-bg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: $admin-error;
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.admin-banlist-form-headtext {
+    h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: $admin-text-primary;
+        margin: 0 0 2px 0;
+    }
+
+    p {
+        font-size: 13px;
+        color: $admin-text-muted;
+        margin: 0;
+    }
+}
+
+.admin-banlist-fields {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.admin-banlist-field {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 180px;
+    min-width: 0;
+
+    &--reason {
+        flex: 2 1 240px;
+    }
+
+    &--submit {
+        flex: 0 0 auto;
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .form-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: $admin-text-secondary;
+        margin-bottom: 6px;
+    }
+
+    .form-control {
+        background: $admin-bg-darker;
+        border: 1px solid $admin-border-medium;
+        color: $admin-text-primary;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 14px;
+        color-scheme: dark;
+
+        &:focus {
+            background: $admin-bg-darker;
+            border-color: $admin-accent-orange;
+            color: $admin-text-primary;
+            box-shadow: 0 0 0 3px $admin-accent-glow;
+        }
+
+        &::placeholder {
+            color: $admin-text-muted;
+        }
+    }
+
+    .form-text {
+        font-size: 12px;
+        color: $admin-text-muted;
+        margin-top: 6px;
+    }
+}
+
+.admin-btn-danger {
+    background: linear-gradient(135deg, $admin-error 0%, #b91c1c 100%);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(239, 68, 68, 0.2);
+    white-space: nowrap;
+
+    &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(239, 68, 68, 0.28);
+        color: #fff;
+    }
+}
+
+.admin-banlist-form .alert-danger {
+    background: $admin-error-bg;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: $admin-error;
+    border-radius: 8px;
+    margin-bottom: 16px;
+
+    ul {
+        padding-left: 20px;
+    }
+}
+
+// Banlist table cells
+.admin-banlist-eos {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 12px;
+    color: $admin-text-primary;
+    background: $admin-bg-elevated;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.admin-banlist-player-link {
+    color: $admin-accent-orange;
+    text-decoration: none;
+
+    &:hover {
+        color: $admin-accent-orange-light;
+        text-decoration: underline;
+    }
+}
+
+.admin-status-badge.neutral {
+    background: $admin-bg-elevated;
+    color: $admin-text-secondary;
+}
+
+@media (max-width: 768px) {
+    .admin-banlist-field {
+        flex-basis: 100%;
+    }
+
+    .admin-banlist-field--submit .admin-btn-danger {
+        width: 100%;
+        justify-content: center !important;
+    }
+}

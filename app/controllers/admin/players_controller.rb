@@ -8,11 +8,11 @@ module Admin
       scope = policy_scope(Player)
 
       @players = if @query.present?
-        scope.includes(:game_session).search_by_query(@query)
-      else
-        scope.eager_load(:game_session)
-             .order(Arel.sql("(game_sessions.online IS TRUE) DESC"), in_game_name: :asc)
-      end
+                   scope.includes(:game_session).search_by_query(@query)
+                 else
+                   scope.eager_load(:game_session)
+                        .order(Arel.sql("(game_sessions.online IS TRUE) DESC"), in_game_name: :asc)
+                 end
     end
 
     def edit

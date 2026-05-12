@@ -33,6 +33,13 @@
         Joueurs
         <span class="admin-nav-badge"><%= @online_players_count || 0 %></span>
       <% end %>
+      <%= link_to admin_banned_players_path, class: "admin-nav-item #{'active' if controller_name == 'banned_players'}" do %>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+        </svg>
+        Banlist
+      <% end %>
     </div>
 
     <div class="admin-nav-section">

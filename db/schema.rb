@@ -10,10 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2026_05_09_161347) do
+ActiveRecord::Schema[7.1].define(version: 2026_05_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_trgm"
   enable_extension "plpgsql"
+
+  create_table "banned_players", force: :cascade do |t|
+    t.string "eos_id", null: false
+    t.text "reason"
+    t.datetime "expires_at"
+    t.bigint "banned_by_id"
+    t.bigint "player_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["banned_by_id"], name: "index_banned_players_on_banned_by_id"
+    t.index ["eos_id"], name: "index_banned_players_on_eos_id", unique: true
+    t.index ["expires_at"], name: "index_banned_players_on_expires_at"
+    t.index ["player_id"], name: "index_banned_players_on_player_id"
+  end
 
   create_table "game_sessions", force: :cascade do |t|
     t.bigint "player_id", null: false
@@ -106,6 +120,8 @@ ActiveRecord::Schema[7.1].define(version: 2026_05_09_161347) do
     t.index ["vote_valid"], name: "index_votes_on_vote_valid"
   end
 
+  add_foreign_key "banned_players", "players", on_delete: :nullify
+  add_foreign_key "banned_players", "users", column: "banned_by_id", on_delete: :nullify
   add_foreign_key "game_sessions", "players"
   add_foreign_key "rcon_executions", "players"
   add_foreign_key "rcon_executions", "rcon_command_templates"
