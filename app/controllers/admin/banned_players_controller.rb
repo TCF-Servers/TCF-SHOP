@@ -14,14 +14,8 @@ module Admin
       authorize @banned_player
 
       if @banned_player.save
-        outcome = enforce_ban!(@banned_player)
-        message = ban_message(@banned_player, outcome)
-        flash_key = outcome == :rcon_failed ? :alert : :notice
-
-        respond_to do |format|
-          format.turbo_stream { flash.now[flash_key] = message }
-          format.html { redirect_to admin_banned_players_path, flash: { flash_key => message } }
-        end
+        outcome = broadcast_rcon!("BanPlayer #{@banned_player.eos_id}", player: @banned_player.player)
+        flash_message ban_message(@banned_player.eos_id, outcome), outcome
       else
         respond_to do |format|
           format.turbo_stream { render :create, status: :unprocessable_entity }
@@ -35,44 +29,53 @@ module Admin
 
     def destroy
       authorize @banned_player
+      eos_id = @banned_player.eos_id
+      player = @banned_player.player
       @banned_player.destroy
-      respond_to do |format|
-        format.turbo_stream
-        format.html { redirect_to admin_banned_players_path, notice: "Bannissement levé" }
-      end
+
+      outcome = broadcast_rcon!("UnbanPlayer #{eos_id}", player: player)
+      flash_message unban_message(eos_id, outcome), outcome
     end
 
     private
 
-    # Si le joueur est en base et connecté, on l'expulse du serveur via RCON
-    # (BanPlayer <eos_id>) et on journalise un RconExecution.
-    # Renvoie :offline, :rcon_sent ou :rcon_failed.
-    def enforce_ban!(banned_player)
-      player = banned_player.player
-      return :offline unless player&.online?
+    # Diffuse une commande RCON sur toutes les maps du cluster et journalise un
+    # RconExecution agrégé. Renvoie :rcon_ok, :rcon_partial ou :rcon_failed.
+    def broadcast_rcon!(command, player: nil)
+      results = RconDispatcher.execute_and_log_all(command, user: current_user, player: player)
+      ok = results.values.count(&:success?)
+      return :rcon_failed if results.empty? || ok.zero?
 
-      execution = RconDispatcher.execute_and_log(
-        "BanPlayer #{banned_player.eos_id}",
-        map_name: player.current_map,
-        user: current_user,
-        player: player
-      )
-      execution.success? ? :rcon_sent : :rcon_failed
+      ok == results.size ? :rcon_ok : :rcon_partial
     rescue StandardError => e
-      Rails.logger.error("[BanPlayer] échec lors de l'expulsion RCON de #{banned_player.eos_id}: #{e.class}: #{e.message}")
+      Rails.logger.error("[RCON] échec lors de la diffusion de '#{command}': #{e.class}: #{e.message}")
       :rcon_failed
     end
 
-    def ban_message(banned_player, outcome)
-      base = "EOS ID #{banned_player.eos_id} ajouté à la banlist."
+    def flash_message(message, outcome)
+      key = outcome == :rcon_ok ? :notice : :alert
+      respond_to do |format|
+        format.turbo_stream { flash.now[key] = message }
+        format.html { redirect_to admin_banned_players_path, flash: { key => message } }
+      end
+    end
+
+    def ban_message(eos_id, outcome)
+      rcon_outcome_message("EOS ID #{eos_id} ajouté à la banlist.", "BanPlayer", outcome)
+    end
+
+    def unban_message(eos_id, outcome)
+      rcon_outcome_message("Bannissement de #{eos_id} levé.", "UnbanPlayer", outcome)
+    end
+
+    def rcon_outcome_message(base, rcon_verb, outcome)
       case outcome
-      when :rcon_sent
-        map = banned_player.player.game_session&.formatted_map_name || banned_player.player.current_map
-        "#{base} Joueur expulsé du serveur (#{map}) via RCON."
-      when :rcon_failed
-        "#{base} ⚠️ La commande RCON BanPlayer a échoué — expulse le joueur manuellement."
+      when :rcon_ok
+        "#{base} #{rcon_verb} envoyé sur toutes les maps."
+      when :rcon_partial
+        "#{base} ⚠️ #{rcon_verb} envoyé, mais certaines maps n'ont pas répondu — voir le journal RCON."
       else
-        "#{base} Le joueur n'est pas connecté : aucune commande RCON envoyée."
+        "#{base} ⚠️ La commande RCON #{rcon_verb} a échoué — aucun serveur n'a répondu."
       end
     end
 

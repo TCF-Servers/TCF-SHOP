@@ -1,1 +1,4 @@
 <%= turbo_stream.remove dom_id(@banned_player) %>
+<%= turbo_stream.update "flash" do %>
+  <%= render "shared/flashes" %>
+<% end %>
