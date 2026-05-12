@@ -18,7 +18,7 @@
       <span class="admin-status-badge success">Jusqu'au <%= banned_player.expires_at.strftime("%d/%m/%Y %H:%M") %></span>
     <% end %>
   </td>
-  <td><%= banned_player.banned_by&.email&.split("@")&.first || "—" %></td>
+  <td><%= banned_player.banned_by&.player&.in_game_name.presence || "—" %></td>
   <td class="admin-table-date"><%= banned_player.created_at.strftime("%d/%m/%Y") %></td>
   <td class="text-end">
     <button type="button" class="admin-btn-icon danger" title="Lever le bannissement"

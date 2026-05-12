@@ -3,6 +3,9 @@
     <%= render "form", banned_player: @banned_player %>
   <% end %>
 <% else %>
+  <%= turbo_stream.update "flash" do %>
+    <%= render "shared/flashes" %>
+  <% end %>
   <%= turbo_stream.update "banned_player_form" do %>
     <%= render "form", banned_player: BannedPlayer.new %>
   <% end %>
