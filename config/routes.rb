@@ -16,10 +16,14 @@ Rails.application.routes.draw do
   # Liste des EOS IDs des administrateurs (consommée par le serveur de jeu)
   get '/admins.txt', to: 'admins#index'
 
+  # Liste des EOS IDs bannis encore actifs (consommée par le serveur de jeu)
+  get '/bans.txt', to: 'bans#index'
+
   get :ranking, to: 'pages#ranking'
   namespace :admin do
     get :dashboard, to: 'dashboard#index'
     resources :rcon_command_templates
     resources :players, only: [:index, :edit, :update, :destroy]
+    resources :banned_players, only: [:index, :create, :destroy]
   end
 end

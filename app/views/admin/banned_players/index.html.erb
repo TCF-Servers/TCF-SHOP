@@ -1,0 +1,45 @@
+<% content_for(:page_title) { "Banlist" } %>
+
+<div class="admin-section">
+  <div class="admin-section-header">
+    <h2 class="admin-section-title">
+      <span class="admin-section-title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+        </svg>
+      </span>
+      Banlist (<%= @banned_players.size %>)
+    </h2>
+  </div>
+
+  <div id="banned_player_form" class="mb-4">
+    <%= render "form", banned_player: @banned_player %>
+  </div>
+
+  <div class="admin-table-container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>EOS ID</th>
+          <th>Joueur</th>
+          <th>Raison</th>
+          <th>Expiration</th>
+          <th>Banni par</th>
+          <th>Le</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="banned_players_table_body">
+        <% @banned_players.each do |banned_player| %>
+          <%= render "banned_player_row", banned_player: banned_player %>
+        <% end %>
+        <% if @banned_players.empty? %>
+          <tr id="banned_players_empty">
+            <td colspan="7" class="admin-table-empty">Aucun joueur banni</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+<tr id="<%= dom_id(banned_player) %>">
+  <td><span class="admin-banlist-eos"><%= banned_player.eos_id %></span></td>
+  <td>
+    <% if banned_player.player %>
+      <%= link_to banned_player.player.in_game_name.presence || "—",
+                  edit_admin_player_path(banned_player.player), class: "admin-banlist-player-link" %>
+    <% else %>
+      <span class="text-muted">Inconnu</span>
+    <% end %>
+  </td>
+  <td><%= banned_player.reason.presence || "—" %></td>
+  <td>
+    <% if banned_player.permanent? %>
+      <span class="admin-status-badge neutral">Permanent</span>
+    <% elsif banned_player.expired? %>
+      <span class="admin-status-badge neutral">Expiré le <%= banned_player.expires_at.strftime("%d/%m/%Y %H:%M") %></span>
+    <% else %>
+      <span class="admin-status-badge success">Jusqu'au <%= banned_player.expires_at.strftime("%d/%m/%Y %H:%M") %></span>
+    <% end %>
+  </td>
+  <td><%= banned_player.banned_by&.email&.split("@")&.first || "—" %></td>
+  <td class="admin-table-date"><%= banned_player.created_at.strftime("%d/%m/%Y") %></td>
+  <td class="text-end">
+    <button type="button" class="admin-btn-icon danger" title="Lever le bannissement"
+            data-controller="swal-confirm"
+            data-action="click->swal-confirm#confirm"
+            data-swal-confirm-url-value="<%= admin_banned_player_path(banned_player) %>"
+            data-swal-confirm-title-value="Lever ce bannissement ?"
+            data-swal-confirm-text-value="<%= banned_player.eos_id %> pourra de nouveau se connecter."
+            data-swal-confirm-confirm-text-value="Lever le ban">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+    </button>
+  </td>
+</tr>

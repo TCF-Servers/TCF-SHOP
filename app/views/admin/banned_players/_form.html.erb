@@ -1,0 +1,47 @@
+<%= form_with model: [:admin, banned_player], class: "admin-banlist-form" do |f| %>
+  <div class="admin-banlist-form-head">
+    <span class="admin-banlist-form-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+      </svg>
+    </span>
+    <div class="admin-banlist-form-headtext">
+      <h3>Ajouter un bannissement</h3>
+      <p>Bannir un joueur par son EOS ID — même s'il n'est pas (encore) connu en base.</p>
+    </div>
+  </div>
+
+  <% if banned_player.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% banned_player.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="admin-banlist-fields">
+    <div class="admin-banlist-field admin-banlist-field--eos">
+      <%= f.label :eos_id, "EOS ID", class: "form-label" %>
+      <%= f.text_field :eos_id, class: "form-control font-monospace",
+                       placeholder: "32 caractères hexadécimaux", autocomplete: "off", required: true %>
+    </div>
+
+    <div class="admin-banlist-field admin-banlist-field--reason">
+      <%= f.label :reason, "Raison", class: "form-label" %>
+      <%= f.text_field :reason, class: "form-control", placeholder: "Optionnel" %>
+    </div>
+
+    <div class="admin-banlist-field admin-banlist-field--expires">
+      <%= f.label :expires_at, "Expiration", class: "form-label" %>
+      <%= f.datetime_local_field :expires_at, class: "form-control" %>
+      <span class="form-text">Vide = ban permanent</span>
+    </div>
+
+    <div class="admin-banlist-field admin-banlist-field--submit">
+      <%= f.submit "Bannir", class: "admin-btn admin-btn-danger" %>
+    </div>
+  </div>
+<% end %>

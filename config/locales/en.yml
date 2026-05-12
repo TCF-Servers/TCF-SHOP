@@ -29,3 +29,11 @@
 
 en:
   hello: "Hello world"
+  activerecord:
+    attributes:
+      banned_player:
+        eos_id: "EOS ID"
+        reason: "Raison"
+        expires_at: "Expiration"
+        banned_by: "Banni par"
+        player: "Joueur"

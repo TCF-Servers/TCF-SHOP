@@ -1,0 +1,13 @@
+<% if @banned_player.errors.any? %>
+  <%= turbo_stream.update "banned_player_form" do %>
+    <%= render "form", banned_player: @banned_player %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.update "banned_player_form" do %>
+    <%= render "form", banned_player: BannedPlayer.new %>
+  <% end %>
+  <%= turbo_stream.remove "banned_players_empty" %>
+  <%= turbo_stream.prepend "banned_players_table_body" do %>
+    <%= render "banned_player_row", banned_player: @banned_player %>
+  <% end %>
+<% end %>
