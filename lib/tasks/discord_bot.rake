@@ -274,8 +274,25 @@ namespace :discord do
         bot_thread = Thread.new { bot.run }
 
         # Vérifier régulièrement si le thread du bot est toujours en vie
+        last_cleanup_date = nil
         loop do
           sleep 60
+
+          # Nettoyage post-restart serveurs (~4h15). Les joueurs présents au moment
+          # du restart ne génèrent pas de "Player logged off" Discord : leur session
+          # reste online: true à tort. On force le disconnect une fois par jour.
+          now = Time.current
+          if now.hour == 4 && now.min >= 15 && last_cleanup_date != now.to_date
+            begin
+              count = GameSession.online.count
+              GameSession.online.update_all(online: false, updated_at: now)
+              last_cleanup_date = now.to_date
+              puts "[#{now}] Nettoyage post-restart: #{count} sessions passées hors-ligne"
+            rescue => e
+              puts "Erreur nettoyage post-restart: #{e.message}"
+            end
+          end
+
           if !bot_thread.alive?
             puts "Le thread du bot n'est plus actif, redémarrage..."
             raise "Thread du bot mort, redémarrage"
