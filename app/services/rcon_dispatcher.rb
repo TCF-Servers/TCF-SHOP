@@ -15,6 +15,7 @@ class RconDispatcher
     "Extinction_WP"    => "EXTINCTION_WP_RCON_PORT",
     "Astraeos_WP"      => "ASTRAEOS_WP_RCON_PORT",
     "Valguero_WP"      => "VALGUERO_WP_RCON_PORT",
+    "Genesis_WP"       => "GENESIS_WP_RCON_PORT"
   }.freeze
 
   DEFAULT_PORT_ENV = "ISLAND_WP_RCON_PORT"
