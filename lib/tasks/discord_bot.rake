@@ -12,6 +12,7 @@ MAP_PORTS = {
   'Extinction_WP' => ENV['EXTINCTION_WP_RCON_PORT'].to_i,
   'Astraeos_WP' => ENV['ASTRAEOS_WP_RCON_PORT'].to_i,
   'Valguero_WP' => ENV['VALGUERO_WP_RCON_PORT'].to_i,
+  'Genesis_WP' => ENV['GENESIS_WP_RCON_PORT'].to_i
 }.freeze
 
 MAX_VOTES_PER_PERIOD = 3
